@@ -10,7 +10,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 {
     class Gramatica : Grammar
     {
-        public Gramatica() : base(caseSensitive : true)
+
+        public Gramatica() : base(caseSensitive: true)
         {
             #region ER
             RegexBasedTerminal entero = new RegexBasedTerminal("ent", "[0-9]+");
@@ -114,13 +115,33 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             T = new NonTerminal("T"),
             G = new NonTerminal("G"),
             F = new NonTerminal("F"),
+            PRO_FUNC = new NonTerminal("PRO_FUNC"),
+            PRO_FUNCP = new NonTerminal("PRO_FUNCP"),
             PROCEDIMIENTOS = new NonTerminal("PROCEDIMIENTOS"),
             PARAMETROS = new NonTerminal("PARAMETROS"),
             FUNCIONES = new NonTerminal("FUNCIONES"),
             RETORNAR = new NonTerminal("RETORNAR"),
             VARLOCALES = new NonTerminal("VARLOCARES"),
             ASIGNAVAR = new NonTerminal("ASIGNAVAR"),
-            DIMOPCIONAL = new NonTerminal("DIMOPCIONAL");
+            DIMOPCIONAL = new NonTerminal("DIMOPCIONAL"),
+            SENTENCIAS = new NonTerminal("SENTENCIAS"),
+            SENTENCIA_SI = new NonTerminal("SENTENCIA_SI"),
+            CONDICIONES = new NonTerminal("CONDICIONES"),
+            SINO = new NonTerminal("SINO"),
+            EXPLOGICA = new NonTerminal("EXPLOGICA"),
+            B = new NonTerminal("B"),
+            C = new NonTerminal("C"),
+            D = new NonTerminal("D"),
+            RELACIONALES = new NonTerminal("RELACIONALES"),
+            A = new NonTerminal("A"),
+            SENTENCIA_PARA = new NonTerminal("SENTENCIA_PARA"),
+            ASIGNACIONPARA = new NonTerminal("ASIGNACION_PARA"),
+            ACCIONES = new NonTerminal("ACCIONES"),
+            SENTENCIA_MIENTRAS = new NonTerminal("SENTENCIA_MIENTRAS"),
+            SENTENCIA_HACER = new NonTerminal("SENTENCIA_HACER"),
+            PINTAR_PUNTO = new NonTerminal("PINTAR_PUNTO"),
+            PINTAR_OR = new NonTerminal("PINTAR_OR"),
+            FUN_PRO = new NonTerminal("FUN_PRO");
             #endregion
 
             #region Gramatica
@@ -138,12 +159,10 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             //------------------CUERPO DEL LIENZO ------------------------------------------------
 
             CUERPOLIENZO.Rule = PRINCIPAL + OTROS;//RECORDAR PONER VARIABLES GLOBALES ANTES DEL METODO PRINCIPAL
-            PRINCIPAL.Rule = principal + opp + clp + opk + clk
+            PRINCIPAL.Rule = principal + opp + clp + opk + SENTENCIAS + clk
                             | Empty;
             OTROS.Rule = VARGLOBALES + OTROS
-                         | PROCEDIMIENTOS + OTROS
-                         | FUNCIONES + OTROS
-                         | ASIGNAVAR + OTROS
+                         | PRO_FUNC + OTROS
                          | Empty;
 
             //------------------DECLARACION DE VARIABLES GLOBALES --------------------------------
@@ -167,7 +186,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             DIMENSIONES.Rule = opb + EXPR + clb + DIMENSIONES
                        | opb + EXPR + clb;
 
-            LLENADOARR.Rule = opl + LISTADOARR + cll
+            LLENADOARR.Rule = igual + opl + LISTADOARR + cll
                        | Empty;
 
             LISTADOARR.Rule = LISTADOARR + com + LISTADOARR
@@ -198,9 +217,16 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                    | caracter
                    | cadena;
 
+            //ELIGE ENTRE PROCEDIMIENTOS Y FUNCIONES
+
+            PRO_FUNC.Rule = CONSERVAR + PRO_FUNCP;
+
+            PRO_FUNCP.Rule = PROCEDIMIENTOS
+                            | TIPO + FUNCIONES;
+
             //GRAMATICA DE PROCEDIMIENTOS
 
-            PROCEDIMIENTOS.Rule = CONSERVAR + identificador + opp + PARAMETROS + clp + opk + clk;
+            PROCEDIMIENTOS.Rule = identificador+ opp + PARAMETROS + clp + opk + SENTENCIAS+ clk;
 
             PARAMETROS.Rule = PARAMETROS + com + PARAMETROS
                             | TIPO + identificador
@@ -208,23 +234,87 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             // GRAMATICA DE FUNCIONES
 
-            FUNCIONES.Rule = CONSERVAR + TIPO + identificador + opp + PARAMETROS + clp + opk + RETORNAR + finSent + clk;
+            FUNCIONES.Rule = identificador + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk;
 
             RETORNAR.Rule = ret +identificador
                             | ret + EXPR;
 
             // GRAMATICA DE ASINACION DE VALOR DE VARIABLES
-
             ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent;
 
             DIMOPCIONAL.Rule = DIMENSIONES
                             | Empty;
+
             //VARIABLES LOCALES 
 
             VARLOCALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent;
+            
+            //SENTENCIAS DENTRO DE LOS PROCEDIMIENTOS
+            SENTENCIAS.Rule = VARLOCALES + SENTENCIAS
+                            | ASIGNAVAR + SENTENCIAS
+                            | SENTENCIA_SI + SENTENCIAS
+                            | SENTENCIA_MIENTRAS + SENTENCIAS 
+                            | SENTENCIA_PARA + SENTENCIAS 
+                            | SENTENCIA_HACER + SENTENCIAS
+                            | PINTAR_PUNTO + SENTENCIAS
+                            | PINTAR_OR + SENTENCIAS
+                            | Empty;
 
-            //
+            //SENTENCIA SI
+            SENTENCIA_SI.Rule = si + opp + CONDICIONES + clp + opk + SENTENCIAS + clk + SINO;
 
+            SINO.Rule = sino + opk + SENTENCIAS + clk
+                      | Empty;
+
+            CONDICIONES.Rule = EXPLOGICA;
+
+            //EXPRESIONES LOGICAS
+            EXPLOGICA.Rule = B;
+
+            B.Rule = B + or + C
+                   | B + nor + C
+                   | B + xor + C
+                   | C;
+
+            C.Rule = C + and + D
+                   | C + nand + D
+                   | D;
+
+            D.Rule = not + RELACIONALES
+                   | RELACIONALES;
+
+            //EXPRESIONES RELACIONALES
+            RELACIONALES.Rule = A;
+
+            A.Rule = A + igualacion + A
+                   | A + diferenciacion + A
+                   | A + menorque + A
+                   | A + mayorIgual + A
+                   | A + menorIgual + A
+                   | A + mayorque + A
+                   | opp + A + clp
+                   | EXPR;
+
+            //SENTENCIA PARA 
+            SENTENCIA_PARA.Rule = para + opp + ASIGNACIONPARA + pc + RELACIONALES + pc + ACCIONES + clp + opk + SENTENCIAS + clk;
+            ASIGNACIONPARA.Rule = vr + TIPO + identificador + igual + EXPR
+                                | identificador + igual + EXPR;
+            ACCIONES.Rule = identificador + mas + mas
+                            | identificador + menos + menos;
+
+            //SENTENCIA MIENTRAS
+            SENTENCIA_MIENTRAS.Rule = mientras + opp + CONDICIONES + clp + opk + SENTENCIAS + clk;
+
+            //SENTENCIAS HACER 
+            SENTENCIA_HACER.Rule = hacer + opk + SENTENCIAS + clk + mientras + opp + CONDICIONES + clp;
+
+            //FUNCIONES NATIVAS DEL LENGUAJE
+            PINTAR_PUNTO.Rule = pintarp + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent;
+
+            PINTAR_OR.Rule = pintaror + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent;
+
+            //LLAMADAS A FUNCIONES
+            FUN_PRO.Rule = identificador + opp + PARAMETROS + clp + finSent;
             #endregion
 
             #region Preferencias

@@ -21,7 +21,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Graficacion
             {
                 String ruta = "C:\\Reportes\\AST.dot";
                 File.WriteAllText(ruta, CadenaDot);
-                Process.Start("cmd.exe", "/k cd C:\\Program Files (x86)\\Graphviz2.38\\bin & dot -Tpng C:\\Reportes\\AST.dot  -o C:\\Reportes\\AST.png");
+                Process.Start("cmd.exe", "/c cd C:\\Program Files (x86)\\Graphviz2.38\\bin & dot -Tpng C:\\Reportes\\AST.dot  -o C:\\Reportes\\AST.png");
             }
             catch
             {
