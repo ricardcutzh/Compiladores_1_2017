@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
+using Prueba_Gramatica_IRONY_Proyecto2.Graficacion;
+using System.Windows.Forms;
 
 namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 {
@@ -24,6 +26,12 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             }
             else
             {
+                String cadenaDOT = ArchivoDot.getDot(raiz);
+                Reporte rep = new Reporte();
+                if (rep.generarImagenAST(cadenaDOT))
+                {
+                    MessageBox.Show("Archivo dot creado exitosamente");
+                }
                 return true;
             }
         }

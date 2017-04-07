@@ -31,6 +31,7 @@
             this.Entrada = new System.Windows.Forms.RichTextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.Salida = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Entrada
@@ -58,11 +59,22 @@
             this.Salida.Size = new System.Drawing.Size(138, 20);
             this.Salida.TabIndex = 2;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(655, 149);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(848, 427);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.Salida);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Entrada);
@@ -78,6 +90,7 @@
         private System.Windows.Forms.RichTextBox Entrada;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox Salida;
+        private System.Windows.Forms.Button button2;
     }
 }
 

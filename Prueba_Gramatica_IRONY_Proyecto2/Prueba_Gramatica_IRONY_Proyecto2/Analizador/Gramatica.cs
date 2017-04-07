@@ -78,6 +78,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             var caract = ToTerm("caracter");
             var cad = ToTerm("cadena");
             var vr = ToTerm("var");
+            var ret = ToTerm("retorna");
             //PALABRAS RESERVADAS SENTENCIAS:
             var si = ToTerm("si");
             var sino = ToTerm("sino");
@@ -116,7 +117,10 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             PROCEDIMIENTOS = new NonTerminal("PROCEDIMIENTOS"),
             PARAMETROS = new NonTerminal("PARAMETROS"),
             FUNCIONES = new NonTerminal("FUNCIONES"),
-            RETORNAR = new NonTerminal("RETORNAR");
+            RETORNAR = new NonTerminal("RETORNAR"),
+            VARLOCALES = new NonTerminal("VARLOCARES"),
+            ASIGNAVAR = new NonTerminal("ASIGNAVAR"),
+            DIMOPCIONAL = new NonTerminal("DIMOPCIONAL");
             #endregion
 
             #region Gramatica
@@ -138,6 +142,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | Empty;
             OTROS.Rule = VARGLOBALES + OTROS
                          | PROCEDIMIENTOS + OTROS
+                         | FUNCIONES + OTROS
+                         | ASIGNAVAR + OTROS
                          | Empty;
 
             //------------------DECLARACION DE VARIABLES GLOBALES --------------------------------
@@ -204,8 +210,21 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             FUNCIONES.Rule = CONSERVAR + TIPO + identificador + opp + PARAMETROS + clp + opk + RETORNAR + finSent + clk;
 
-            RETORNAR.Rule = identificador
-                            | EXPR;
+            RETORNAR.Rule = ret +identificador
+                            | ret + EXPR;
+
+            // GRAMATICA DE ASINACION DE VALOR DE VARIABLES
+
+            ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent;
+
+            DIMOPCIONAL.Rule = DIMENSIONES
+                            | Empty;
+            //VARIABLES LOCALES 
+
+            VARLOCALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent;
+
+            //
+
             #endregion
 
             #region Preferencias

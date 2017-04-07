@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Prueba_Gramatica_IRONY_Proyecto2.Analizador;
+using System.Diagnostics;
+
 
 namespace Prueba_Gramatica_IRONY_Proyecto2
 {
@@ -24,11 +26,17 @@ namespace Prueba_Gramatica_IRONY_Proyecto2
             if (resultado)
             {
                 Salida.Text = "Entrada valida";
+
             }
             else
             {
                 Salida.Text = "Entrada invalida";
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+           Process.Start("cmd.exe", "/k cd C:\\Program Files (x86)\\Graphviz2.38\\bin & dot -v");
+        } 
     }
 }
