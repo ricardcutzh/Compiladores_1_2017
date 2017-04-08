@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
-
+using Irony.Interpreter;
 namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 {
     class Gramatica : Grammar
@@ -146,7 +146,13 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             SENTE_DEC = new NonTerminal("SENTE_DEC"),
             DIM = new NonTerminal("DIM"),
             RESULTADOFUN = new NonTerminal("RESULTADOFUN"),
-            LISTADOEXPRE = new NonTerminal("LISTADOEXPRE");
+            LISTADOEXPRE = new NonTerminal("LISTADOEXPRE"),
+            EXPRPRIMA = new NonTerminal("EXPRPRIMA"),
+            EP = new NonTerminal("EP"),
+            TP = new NonTerminal("TP"),
+            GP = new NonTerminal("GP"),
+            FP = new NonTerminal("FP"),
+            CONDICIONESPRIMA = new NonTerminal("CONDICIONESPRIMA");
             #endregion
 
             #region Gramatica
@@ -175,7 +181,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                          | Empty;
 
             //------------------DECLARACION DE VARIABLES GLOBALES --------------------------------
-            VARGLOBALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent;
+            VARGLOBALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent
+                            | SyntaxError + finSent;
             TIPOASIGNACION.Rule = ASIGNACION
                             | arreglo + ASIGNACIONARR + DIMENSIONES + LLENADOARR;
             CONSERVAR.Rule = conservar
@@ -193,7 +200,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                        | identificador;
 
             DIMENSIONES.Rule = opb + EXPR + clb + DIMENSIONES
-                       | opb + EXPR + clb;
+                       | opb + EXPR + clb
+                       | SyntaxError + clb;
 
             LLENADOARR.Rule = igual + opl + LISTADOARR + cll
                        | igual + RESULTADOFUN 
@@ -228,9 +236,36 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                    | RESULTADOFUN
                    | cadena;
 
+            EXPRPRIMA.Rule = EP;
+
+            EP.Rule = EP + mas + TP
+                    | EP + menos + TP
+                    | TP;
+
+            TP.Rule = TP + por + GP
+                    | TP + div + GP
+                    | GP;
+
+            GP.Rule = GP + pot + FP
+                    | FP;
+
+            FP.Rule = opp + EP + clp
+                   | opp + RELACIONALES + clp
+                   | opp + EXPLOGICA + clp
+                   | identificador
+                   | entero
+                   | identificador + DIMENSIONES
+                   | dec
+                   | verd
+                   | fals
+                   | caracter
+                   | RESULTADOFUN
+                   | cadena;
+
+
             //ELIGE ENTRE PROCEDIMIENTOS Y FUNCIONES
 
-            PRO_FUNC.Rule = CONSERVAR + PRO_FUNCP;
+            PRO_FUNC.Rule = CONSERVAR + VISIBILIDAD + PRO_FUNCP;
 
             PRO_FUNCP.Rule = PROCEDIMIENTOS
                             | TIPO + FUNCIONES;
@@ -245,7 +280,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             // GRAMATICA DE FUNCIONES
 
-            FUNCIONES.Rule = DIM + identificador  + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk;
+            FUNCIONES.Rule = DIM + identificador  + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk
+                            | SyntaxError + clk;
 
             DIM.Rule = opb + clb + DIM
                       | Empty;
@@ -254,14 +290,16 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | ret + EXPR;
 
             // GRAMATICA DE ASINACION DE VALOR DE VARIABLES
-            ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent;
+            ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent
+                            | SyntaxError + finSent;
 
             DIMOPCIONAL.Rule = DIMENSIONES
                             | Empty;
 
             //VARIABLES LOCALES 
 
-            VARLOCALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent;
+            VARLOCALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent
+                            | SyntaxError + finSent;
             
             //SENTENCIAS DENTRO DE LOS PROCEDIMIENTOS
             SENTENCIAS.Rule = VARLOCALES + SENTENCIAS
@@ -278,9 +316,12 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | Empty;
 
             //SENTENCIA SI
-            SENTENCIA_SI.Rule = si + opp + CONDICIONES + clp + opk + SENTENCIAS + clk + SINO;
+            SENTENCIA_SI.Rule = si + opp + CONDICIONES + clp + opk + SENTENCIAS + clk + SINO
+                                | SyntaxError + clk;
+
 
             SINO.Rule = sino + opk + SENTENCIAS + clk
+                      | SyntaxError + clk
                       | Empty;
 
             CONDICIONES.Rule = EXPLOGICA;
@@ -309,8 +350,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                    | A + mayorIgual + A
                    | A + menorIgual + A
                    | A + mayorque + A
-                   | opp + A + clp
-                   | EXPR;
+                   | EXPRPRIMA;
 
             //SENTENCIA PARA 
             SENTENCIA_PARA.Rule = para + opp + ASIGNACIONPARA + pc + RELACIONALES + pc + ACCIONES + clp + opk + SENTENCIAS + clk;
@@ -326,19 +366,24 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             SENTENCIA_HACER.Rule = hacer + opk + SENTENCIAS + clk + mientras + opp + CONDICIONES + clp;
 
             //FUNCIONES NATIVAS DEL LENGUAJE
-            PINTAR_PUNTO.Rule = pintarp + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent;
+            PINTAR_PUNTO.Rule = pintarp + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent
+                              | SyntaxError + finSent;
 
-            PINTAR_OR.Rule = pintaror + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent;
+            PINTAR_OR.Rule = pintaror + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent
+                              | SyntaxError + finSent;
 
             //LLAMADAS A FUNCIONES
-            FUN_PRO.Rule = identificador + opp + LISTADOEXPRE + clp + finSent;
+            FUN_PRO.Rule = identificador + opp + LISTADOEXPRE + clp + finSent
+                            | SyntaxError + finSent;
 
             //SENTENCIAS DE AUMENTOS Y DECREMENTOS DE VARIABLES
             SENTE_AU.Rule = identificador + mas + mas + finSent
-                            | identificador + mas + igual + EXPR + finSent;
+                            | identificador + mas + igual + EXPR + finSent
+                            | SyntaxError + finSent;
 
             SENTE_DEC.Rule = identificador + menos + menos + finSent
-                            | identificador + menos + igual + EXPR + finSent;
+                            | identificador + menos + igual + EXPR + finSent
+                            | SyntaxError + finSent;
 
             //RESULTADO FUNCIONES
             RESULTADOFUN.Rule = identificador + opp + LISTADOEXPRE + clp;
@@ -347,7 +392,6 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             LISTADOEXPRE.Rule = LISTADOEXPRE + com + LISTADOEXPRE
                                | EXPR
                                | Empty;
-
 
             #endregion
 
@@ -368,10 +412,9 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             String tipo;
             int fila;
             int columna;
-
             if(error.Contains("Invalid character"))
             {
-                tipo = "Error Léxico";
+                tipo = "Error Lexico";
                 string delimStr = ":";
                 char[] delimiter = delimStr.ToCharArray();
                 string[] division = error.Split(delimiter, 2);

@@ -32,6 +32,11 @@ namespace Prueba_Gramatica_IRONY_Proyecto2
             {
                 Salida.Text = "Entrada invalida";
             }
+            List<ErrorEnAnalisis> errores = Sintactico.err;
+            foreach(ErrorEnAnalisis error in errores)
+            {
+                MessageBox.Show("ERROR: " + error.getError() + " Col: " + error.getColumna()+" Lin: "+error.getLinea());
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)

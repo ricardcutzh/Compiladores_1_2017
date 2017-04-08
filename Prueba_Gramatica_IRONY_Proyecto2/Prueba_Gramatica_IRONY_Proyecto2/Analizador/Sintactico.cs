@@ -12,15 +12,16 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 {
     class Sintactico : Grammar
     {
+        public static List<ErrorEnAnalisis> err = new List<ErrorEnAnalisis>();
         public static bool analizar(String cadena)
         {
-            Grammar gramatica = new Gramatica();
+            Gramatica gramatica = new Gramatica();
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
             ParseTree arbol = parser.Parse(cadena);
             ParseTreeNode raiz = arbol.Root;
-
-            if(raiz == null)
+            err = gramatica.getErrores();
+            if (raiz == null)
             {
                 return false;
             }
