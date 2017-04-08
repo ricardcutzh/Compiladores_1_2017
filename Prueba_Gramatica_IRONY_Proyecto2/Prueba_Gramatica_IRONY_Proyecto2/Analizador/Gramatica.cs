@@ -141,7 +141,12 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             SENTENCIA_HACER = new NonTerminal("SENTENCIA_HACER"),
             PINTAR_PUNTO = new NonTerminal("PINTAR_PUNTO"),
             PINTAR_OR = new NonTerminal("PINTAR_OR"),
-            FUN_PRO = new NonTerminal("FUN_PRO");
+            FUN_PRO = new NonTerminal("FUN_PRO"),
+            SENTE_AU = new NonTerminal("SENTE_AU_DEC"),
+            SENTE_DEC = new NonTerminal("SENTE_DEC"),
+            DIM = new NonTerminal("DIM"),
+            RESULTADOFUN = new NonTerminal("RESULTADOFUN"),
+            LISTADOEXPRE = new NonTerminal("LISTADOEXPRE");
             #endregion
 
             #region Gramatica
@@ -187,6 +192,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                        | opb + EXPR + clb;
 
             LLENADOARR.Rule = igual + opl + LISTADOARR + cll
+                       | igual + RESULTADOFUN 
                        | Empty;
 
             LISTADOARR.Rule = LISTADOARR + com + LISTADOARR
@@ -215,6 +221,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                    | verd
                    | fals
                    | caracter
+                   | RESULTADOFUN
                    | cadena;
 
             //ELIGE ENTRE PROCEDIMIENTOS Y FUNCIONES
@@ -234,7 +241,10 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             // GRAMATICA DE FUNCIONES
 
-            FUNCIONES.Rule = identificador + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk;
+            FUNCIONES.Rule = DIM + identificador  + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk;
+
+            DIM.Rule = opb + clb + DIM
+                      | Empty;
 
             RETORNAR.Rule = ret +identificador
                             | ret + EXPR;
@@ -258,6 +268,9 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | SENTENCIA_HACER + SENTENCIAS
                             | PINTAR_PUNTO + SENTENCIAS
                             | PINTAR_OR + SENTENCIAS
+                            | FUN_PRO + SENTENCIAS
+                            | SENTE_AU + SENTENCIAS
+                            | SENTE_DEC + SENTENCIAS
                             | Empty;
 
             //SENTENCIA SI
@@ -314,7 +327,24 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             PINTAR_OR.Rule = pintaror + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent;
 
             //LLAMADAS A FUNCIONES
-            FUN_PRO.Rule = identificador + opp + PARAMETROS + clp + finSent;
+            FUN_PRO.Rule = identificador + opp + LISTADOEXPRE + clp + finSent;
+
+            //SENTENCIAS DE AUMENTOS Y DECREMENTOS DE VARIABLES
+            SENTE_AU.Rule = identificador + mas + mas + finSent
+                            | identificador + mas + igual + EXPR + finSent;
+
+            SENTE_DEC.Rule = identificador + menos + menos + finSent
+                            | identificador + menos + igual + EXPR + finSent;
+
+            //RESULTADO FUNCIONES
+            RESULTADOFUN.Rule = identificador + opp + LISTADOEXPRE + clp;
+
+            //LISTADO DE EXPRESIONES QUE SE RECIBEN
+            LISTADOEXPRE.Rule = LISTADOEXPRE + com + LISTADOEXPRE
+                               | EXPR
+                               | Empty;
+
+
             #endregion
 
             #region Preferencias
