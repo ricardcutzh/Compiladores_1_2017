@@ -209,6 +209,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             LISTADOARR.Rule = LISTADOARR + com + LISTADOARR
                        | opl + LISTADOARR + cll
+                       | SyntaxError + cll
                        | EXPR;
 
             //EXPRESIONES PARA OPERACIONES
@@ -272,7 +273,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             //GRAMATICA DE PROCEDIMIENTOS
 
-            PROCEDIMIENTOS.Rule = identificador+ opp + PARAMETROS + clp + opk + SENTENCIAS+ clk;
+            PROCEDIMIENTOS.Rule = identificador+ opp + PARAMETROS + clp + opk + SENTENCIAS+ clk
+                                | SyntaxError + clk;
 
             PARAMETROS.Rule = PARAMETROS + com + PARAMETROS
                             | TIPO + identificador
@@ -353,17 +355,20 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                    | EXPRPRIMA;
 
             //SENTENCIA PARA 
-            SENTENCIA_PARA.Rule = para + opp + ASIGNACIONPARA + pc + RELACIONALES + pc + ACCIONES + clp + opk + SENTENCIAS + clk;
+            SENTENCIA_PARA.Rule = para + opp + ASIGNACIONPARA + pc + RELACIONALES + pc + ACCIONES + clp + opk + SENTENCIAS + clk
+                                | SyntaxError + clk;
             ASIGNACIONPARA.Rule = vr + TIPO + identificador + igual + EXPR
                                 | identificador + igual + EXPR;
             ACCIONES.Rule = identificador + mas + mas
                             | identificador + menos + menos;
 
             //SENTENCIA MIENTRAS
-            SENTENCIA_MIENTRAS.Rule = mientras + opp + CONDICIONES + clp + opk + SENTENCIAS + clk;
+            SENTENCIA_MIENTRAS.Rule = mientras + opp + CONDICIONES + clp + opk + SENTENCIAS + clk
+                                    | SyntaxError + clk;
 
             //SENTENCIAS HACER 
-            SENTENCIA_HACER.Rule = hacer + opk + SENTENCIAS + clk + mientras + opp + CONDICIONES + clp;
+            SENTENCIA_HACER.Rule = hacer + opk + SENTENCIAS + clk + mientras + opp + CONDICIONES + clp
+                                | SyntaxError + clk;
 
             //FUNCIONES NATIVAS DEL LENGUAJE
             PINTAR_PUNTO.Rule = pintarp + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent
@@ -386,7 +391,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | SyntaxError + finSent;
 
             //RESULTADO FUNCIONES
-            RESULTADOFUN.Rule = identificador + opp + LISTADOEXPRE + clp;
+            RESULTADOFUN.Rule = identificador + opp + LISTADOEXPRE + clp
+                             | SyntaxError + clp;
 
             //LISTADO DE EXPRESIONES QUE SE RECIBEN
             LISTADOEXPRE.Rule = LISTADOEXPRE + com + LISTADOEXPRE
@@ -396,6 +402,8 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
             #endregion
 
             #region Preferencias
+            NonGrammarTerminals.Add(linea);
+            NonGrammarTerminals.Add(multlinea);
             this.Root = INICIO;
             //LanguageFlags = LanguageFlags.CreateAst;
             #endregion

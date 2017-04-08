@@ -17,6 +17,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2
     {
         public Form1()
         {
+            
             InitializeComponent();
         }
 
@@ -41,7 +42,20 @@ namespace Prueba_Gramatica_IRONY_Proyecto2
 
         private void button2_Click(object sender, EventArgs e)
         {
-           Process.Start("cmd.exe", "/k cd C:\\Program Files (x86)\\Graphviz2.38\\bin & dot -v");
-        } 
+           //Process.Start("cmd.exe", "/k cd C:\\Program Files (x86)\\Graphviz2.38\\bin & dot -v");
+          
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            int line =  Entrada.GetLineFromCharIndex(Entrada.GetFirstCharIndexOfCurrentLine());
+            int colum = 1 + Entrada.SelectionStart - Entrada.GetFirstCharIndexOfCurrentLine();
+            label1.Text = "line: " + line.ToString() + ", column: " + colum.ToString();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            timer1.Start();
+        }
     }
 }
