@@ -162,8 +162,12 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
                             | identificador;
 
             //------------------CUERPO DEL LIENZO ------------------------------------------------
-
-            CUERPOLIENZO.Rule = PRINCIPAL + OTROS;//RECORDAR PONER VARIABLES GLOBALES ANTES DEL METODO PRINCIPAL
+            //RECORDAR PONER VARIABLES GLOBALES ANTES DEL METODO PRINCIPAL
+            CUERPOLIENZO.Rule = PRINCIPAL + OTROS
+                             | VARGLOBALES + CUERPOLIENZO
+                             | PRO_FUNC + CUERPOLIENZO
+                             | Empty;
+                
             PRINCIPAL.Rule = principal + opp + clp + opk + SENTENCIAS + clk
                             | Empty;
             OTROS.Rule = VARGLOBALES + OTROS
