@@ -10,7 +10,7 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 {
     class Gramatica : Grammar
     {
-
+        List<ErrorEnAnalisis> errores = new List<ErrorEnAnalisis>(); 
         public Gramatica() : base(caseSensitive: true)
         {
             #region ER
@@ -353,7 +353,40 @@ namespace Prueba_Gramatica_IRONY_Proyecto2.Analizador
 
             #region Preferencias
             this.Root = INICIO;
+            //LanguageFlags = LanguageFlags.CreateAst;
             #endregion
+        }
+
+        public List<ErrorEnAnalisis> getErrores()
+        {
+            return this.errores;
+        }
+
+        public override void ReportParseError(ParsingContext context)
+        {
+            String error = (String)context.CurrentToken.ValueString;
+            String tipo;
+            int fila;
+            int columna;
+
+            if(error.Contains("Invalid character"))
+            {
+                tipo = "Error Léxico";
+                string delimStr = ":";
+                char[] delimiter = delimStr.ToCharArray();
+                string[] division = error.Split(delimiter, 2);
+                division = division[1].Split('.');
+                error = "Caracter Invalido" + division[0];
+            }
+            else
+            {
+                tipo = "Error Sintactico";
+            }
+            fila = context.Source.Location.Line;
+            columna = context.Source.Location.Column;
+            ErrorEnAnalisis err = new ErrorEnAnalisis(error, tipo, fila, columna);
+            errores.Add(err);
+            base.ReportParseError(context);
         }
     }
 }
