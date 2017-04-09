@@ -58,6 +58,7 @@
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.Resultado = new System.Windows.Forms.ToolStripTextBox();
+            this.abrirASTVisorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -107,7 +108,8 @@
             // pruebasToolStripMenuItem
             // 
             this.pruebasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addTabToolStripMenuItem});
+            this.addTabToolStripMenuItem,
+            this.abrirASTVisorToolStripMenuItem});
             this.pruebasToolStripMenuItem.Name = "pruebasToolStripMenuItem";
             this.pruebasToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.pruebasToolStripMenuItem.Text = "Pruebas";
@@ -261,6 +263,7 @@
             this.toolStripButton6.Name = "toolStripButton6";
             this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton6.Text = "Arbol AST";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
             // PanelEdicion
             // 
@@ -315,6 +318,13 @@
             this.Resultado.Name = "Resultado";
             this.Resultado.ReadOnly = true;
             this.Resultado.Size = new System.Drawing.Size(100, 25);
+            // 
+            // abrirASTVisorToolStripMenuItem
+            // 
+            this.abrirASTVisorToolStripMenuItem.Name = "abrirASTVisorToolStripMenuItem";
+            this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.abrirASTVisorToolStripMenuItem.Text = "Abrir AST Visor";
+            this.abrirASTVisorToolStripMenuItem.Click += new System.EventHandler(this.abrirASTVisorToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -373,6 +383,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton7;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripTextBox Resultado;
+        private System.Windows.Forms.ToolStripMenuItem abrirASTVisorToolStripMenuItem;
     }
 }
 

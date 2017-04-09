@@ -9,12 +9,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Lienzo2D.Analizador;
+using Lienzo2D.Clases;
+using Lienzo2D.Graficacion;
+using System.Diagnostics;
 
 namespace Lienzo2D
 {
     public partial class Form1 : Form
     {
-        
+        //LISTA DE ARBOLES POR ARCHIVO
+        List<ArbolSintactico> Trees = new List<ArbolSintactico>();
+        //OBJETO REPORTE
+        Reporte rep = new Reporte();
         public Form1()
         {
             InitializeComponent();
@@ -265,6 +271,7 @@ namespace Lienzo2D
                 {
                     Resultado.Text = "Válido";
                     Resultado.ForeColor = Color.Green;
+                    
                 }
                 else
                 {
@@ -275,6 +282,34 @@ namespace Lienzo2D
             else
             {
                 MessageBox.Show("No hay Pestañas abiertas", "Error al Ejecutar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            if (Sintactico.raizDeArbol != null)
+            {
+                String cadenaArbol = ArchivoDot.getDot(Sintactico.raizDeArbol);
+                rep.generarImagenAST(cadenaArbol);
+            }
+            else
+            {
+                MessageBox.Show("No existe un arbol Sintáctico", "Raiz de Arbol Nula", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void abrirASTVisorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (Sintactico.raizDeArbol != null)
+                {
+                    Process.Start("C:\\Reportes\\AST.png");
+                }
+            }
+            catch
+            {
+                MessageBox.Show("No existe un arbol Sintáctico", "Raiz de Arbol Nula", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

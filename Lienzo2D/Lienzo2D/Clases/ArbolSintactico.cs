@@ -12,20 +12,16 @@ namespace Lienzo2D.Clases
     class ArbolSintactico
     {
         ParseTreeNode root;
-        String rutaImagen;
+        String nombreDeArbol;
+        int idDeArbol;
         public ArbolSintactico()
         {
             //Constructor por defecto
         }
-        public ArbolSintactico(ParseTreeNode raiz)
+        public ArbolSintactico(ParseTreeNode raiz, String nombre, int idArbol)
         {
+            this.nombreDeArbol = nombre;
             this.root = raiz;
-        }
-
-        public String getRutaImagen()
-        {
-
-            return this.rutaImagen;
         }
     }
 }
