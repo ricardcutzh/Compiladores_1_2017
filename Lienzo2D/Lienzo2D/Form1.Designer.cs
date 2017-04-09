@@ -37,6 +37,7 @@
             this.guardarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pruebasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.abrirASTVisorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.LienzoNombre = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -50,15 +51,14 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.PanelEdicion = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.TrackPosition = new System.Windows.Forms.Timer(this.components);
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.Resultado = new System.Windows.Forms.ToolStripTextBox();
-            this.abrirASTVisorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PanelEdicion = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.TrackPosition = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -117,9 +117,16 @@
             // addTabToolStripMenuItem
             // 
             this.addTabToolStripMenuItem.Name = "addTabToolStripMenuItem";
-            this.addTabToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.addTabToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.addTabToolStripMenuItem.Text = "Add Tab";
             this.addTabToolStripMenuItem.Click += new System.EventHandler(this.addTabToolStripMenuItem_Click);
+            // 
+            // abrirASTVisorToolStripMenuItem
+            // 
+            this.abrirASTVisorToolStripMenuItem.Name = "abrirASTVisorToolStripMenuItem";
+            this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.abrirASTVisorToolStripMenuItem.Text = "Abrir AST Visor";
+            this.abrirASTVisorToolStripMenuItem.Click += new System.EventHandler(this.abrirASTVisorToolStripMenuItem_Click);
             // 
             // toolStripContainer1
             // 
@@ -254,6 +261,7 @@
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton5.Text = "Reporte de Errores";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // toolStripButton6
             // 
@@ -264,6 +272,32 @@
             this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton6.Text = "Arbol AST";
             this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton7.Text = "Check Text";
+            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Resultado
+            // 
+            this.Resultado.Name = "Resultado";
+            this.Resultado.ReadOnly = true;
+            this.Resultado.Size = new System.Drawing.Size(100, 25);
             // 
             // PanelEdicion
             // 
@@ -292,39 +326,6 @@
             // 
             this.TrackPosition.Interval = 150;
             this.TrackPosition.Tick += new System.EventHandler(this.TrackPosition_Tick);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripButton7
-            // 
-            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton7.Text = "Check Text";
-            this.toolStripButton7.Click += new System.EventHandler(this.toolStripButton7_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
-            // Resultado
-            // 
-            this.Resultado.Name = "Resultado";
-            this.Resultado.ReadOnly = true;
-            this.Resultado.Size = new System.Drawing.Size(100, 25);
-            // 
-            // abrirASTVisorToolStripMenuItem
-            // 
-            this.abrirASTVisorToolStripMenuItem.Name = "abrirASTVisorToolStripMenuItem";
-            this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.abrirASTVisorToolStripMenuItem.Text = "Abrir AST Visor";
-            this.abrirASTVisorToolStripMenuItem.Click += new System.EventHandler(this.abrirASTVisorToolStripMenuItem_Click);
             // 
             // Form1
             // 

@@ -312,5 +312,17 @@ namespace Lienzo2D
                 MessageBox.Show("No existe un arbol Sintáctico", "Raiz de Arbol Nula", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            if (Sintactico.errores.Count() > 0)
+            {
+                if(rep.ReporteDeErrores(Sintactico.errores, tabControl1.TabPages[tabControl1.SelectedIndex].Text))
+                {
+                    Process.Start("C:\\Reportes\\ReporteErrores.html");
+                }
+
+            }
+        }
     }
 }
