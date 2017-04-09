@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,6 +13,7 @@ namespace Lienzo2D
 {
     public partial class Form1 : Form
     {
+        
         public Form1()
         {
             InitializeComponent();
@@ -91,6 +93,7 @@ namespace Lienzo2D
             textEditor.AcceptsTab = true;
             textEditor.Font = new Font("Consolas", 8);
             textEditor.WordWrap = false;
+            textEditor.TextChanged += new EventHandler(eventocambio);
             textEditor.ScrollBars = RichTextBoxScrollBars.None;
             pan.Controls.Add(numl);//posición 0 del panel
             pan.Controls.Add(textEditor);// posición 1 del panel
@@ -122,9 +125,113 @@ namespace Lienzo2D
                     lineas.Text = lineas.Text+ i + "\n";
                 }
             }
+            principal.Focus();
         }
 
         //Colorando Texto
+        private void syntaxColoring()
+        {
+            RichTextBox principal = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+            string reservadas = @"\b(publico|privado|Conservar|Lienzo|extiende|var|retorna|si|sino|para|mientras|hacer|Principal)";
+            MatchCollection typeMatches = Regex.Matches(principal.Text, reservadas);
+
+            string comentarios = @"(\>\>.+$|\<\-.+\-\>$)";
+            MatchCollection coment = Regex.Matches(principal.Text, comentarios, RegexOptions.Multiline);
+
+            
+
+
+            int originalIndex = principal.SelectionStart;
+            int originalLength = principal.SelectionLength;
+            Color originalColor = Color.Black;
+
+            principal.SelectionStart = 0;
+            principal.SelectionLength = principal.Text.Length;
+            principal.SelectionColor = originalColor;
+
+            foreach (Match m in typeMatches)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Blue;
+            }
+
+            foreach(Match m in coment)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Green;
+            }
+
+
+           
+        }
+
+        private void eventocambio(object sender, EventArgs e)
+        {
+            RichTextBox principal = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+            string reservadas = @"\b(publico|privado|Conservar|Lienzo|extiende|var|retorna|si|sino|para|mientras|hacer|Principal)";
+            MatchCollection typeMatches = Regex.Matches(principal.Text, reservadas);
+
+            string comentarios = @"(\>\>.+$|(\<\-(\s*|.*?)*\-\>))";
+            MatchCollection coment = Regex.Matches(principal.Text, comentarios, RegexOptions.Multiline);
+
+            string strings = "\".+?\"";
+            MatchCollection stringMatches = Regex.Matches(principal.Text, strings);
+
+            string tipos = @"(arreglo|doble|boolean|entero|caracter|cadena)";
+            MatchCollection tiposM = Regex.Matches(principal.Text, tipos);
+
+            string delim = @"(\$)";
+            MatchCollection del = Regex.Matches(principal.Text, delim);
+
+            int originalIndex = principal.SelectionStart;
+            int originalLength = principal.SelectionLength;
+            Color originalColor = Color.Black;
+
+            principal.SelectionStart = 0;
+            principal.SelectionLength = principal.Text.Length;
+            principal.SelectionColor = originalColor;
+
+            foreach (Match m in typeMatches)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Blue;
+            }
+
+            foreach (Match m in coment)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Green;
+            }
+
+            foreach (Match m in stringMatches)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Brown;
+            }
+
+            foreach (Match m in tiposM)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.DarkCyan;
+            }
+
+            foreach(Match m in del)
+            {
+                principal.SelectionStart = m.Index;
+                principal.SelectionLength = m.Length;
+                principal.SelectionColor = Color.Purple;
+            }
+
+            principal.SelectionStart = originalIndex;
+            principal.SelectionLength = originalLength;
+            principal.SelectionColor = originalColor;
+        }
 
         #endregion
 
@@ -139,6 +246,11 @@ namespace Lienzo2D
                 LienzoNombre.Text = tab.Text;
                 label2.Text = "Linea: " + line.ToString() + " Columna: " + colum.ToString();
             }  
+        }
+
+        private void toolStripButton7_Click(object sender, EventArgs e)
+        {
+            syntaxColoring();
         }
     }
 }
