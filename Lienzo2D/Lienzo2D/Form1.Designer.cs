@@ -51,6 +51,9 @@
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.TrackPosition = new System.Windows.Forms.Timer(this.components);
+            this.LienzoNombre = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -103,6 +106,8 @@
             // 
             // toolStripContainer1.ContentPanel
             // 
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.LienzoNombre);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.label2);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.label1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.toolStrip1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.PanelEdicion);
@@ -247,9 +252,32 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(120, 20);
+            this.label1.Size = new System.Drawing.Size(142, 20);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Editor de Texto:";
+            this.label1.Text = "Editando Texto de:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(695, 41);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(106, 16);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Linea:  Columna:";
+            // 
+            // TrackPosition
+            // 
+            this.TrackPosition.Tick += new System.EventHandler(this.TrackPosition_Tick);
+            // 
+            // LienzoNombre
+            // 
+            this.LienzoNombre.AutoSize = true;
+            this.LienzoNombre.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LienzoNombre.Location = new System.Drawing.Point(160, 35);
+            this.LienzoNombre.Name = "LienzoNombre";
+            this.LienzoNombre.Size = new System.Drawing.Size(0, 20);
+            this.LienzoNombre.TabIndex = 4;
             // 
             // Form1
             // 
@@ -300,6 +328,9 @@
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Timer TrackPosition;
+        private System.Windows.Forms.Label LienzoNombre;
     }
 }
 

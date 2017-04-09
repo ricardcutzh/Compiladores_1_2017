@@ -12,7 +12,6 @@ namespace Lienzo2D
 {
     public partial class Form1 : Form
     {
-        int contador = 0;
         public Form1()
         {
             InitializeComponent();
@@ -41,41 +40,14 @@ namespace Lienzo2D
         {
             if (tabControl1.TabCount > 0)
             {
-                RichTextBox principal = (RichTextBox)tabControl1.TabPages[0].Controls[0].Controls[1];
-                RichTextBox nume = (RichTextBox)tabControl1.TabPages[0].Controls[0].Controls[0];
-                nume.Text = "";
-                principal.WordWrap = false;
-                nume.WordWrap = false;
-                principal.ScrollBars = RichTextBoxScrollBars.None;
-                nume.ScrollBars = RichTextBoxScrollBars.None;
-                if (principal.Lines.Count()>0)
-                {
- 
-                    
-                    int x = principal.Lines.Count();
-                    if (devuelvemeAltura(x) > tabControl1.TabPages[0].Height)
-                    {
-                        principal.Height = devuelvemeAltura(x);
-                        nume.Height = devuelvemeAltura(x);
-                    }
-                    else
-                    {
-                        principal.Height = tabControl1.Height;
-                        nume.Height = tabControl1.Height;
-                    }
-                        for (int i = 0; i < x; i++)
-                    {
-                        nume.Text = nume.Text + i + "\n";
-
-                    }
-                }
-
+                actualizaNumeroDeLineas();
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             timer1.Start();
+            TrackPosition.Start();
         }
 
 
@@ -93,6 +65,7 @@ namespace Lienzo2D
 
 
         #region CODIGO DE TABS DINAMICAS
+        //agregar una nueva tab al editor de texto
         private void agregarUnaTabNueva(String nombre)
         {
             TabPage nueva = new TabPage(nombre + ".lz");
@@ -107,20 +80,65 @@ namespace Lienzo2D
             RichTextBox textEditor = new RichTextBox();
             RichTextBox numl = new RichTextBox();
             numl.ReadOnly = true;
-            numl.Font = new Font("Consolas", 10);
-            numl.SetBounds(0, 0, 30, tabControl1.Height);
+            numl.Font = new Font("Consolas", 8);
+            numl.SetBounds(0, 0, 30, tabControl1.Height-30);
             //numl.SetBounds(0, 0, 30, 20);
             numl.Text = "0";
-            textEditor.SetBounds(30, 0, tabControl1.Width - 60, tabControl1.Height);
+            numl.WordWrap = false;
+            numl.ScrollBars = RichTextBoxScrollBars.None;
+            textEditor.SetBounds(30, 0, tabControl1.Width - 60, tabControl1.Height-30);
             //textEditor.SetBounds(30, 0, tabControl1.Width -60 , 20);
-            textEditor.Text = "una linea";
             textEditor.AcceptsTab = true;
-            textEditor.Font = new Font("Consolas", 10);
-            pan.Controls.Add(numl);
-            pan.Controls.Add(textEditor);
-            nueva.Controls.Add(pan);
+            textEditor.Font = new Font("Consolas", 8);
+            textEditor.WordWrap = false;
+            textEditor.ScrollBars = RichTextBoxScrollBars.None;
+            pan.Controls.Add(numl);//posición 0 del panel
+            pan.Controls.Add(textEditor);// posición 1 del panel
+            nueva.Controls.Add(pan);// posicion 0 del tabpage
             tabControl1.TabPages.Add(nueva);
         }
+
+        //Actualizando el contador de lineas para cada tab
+        private void actualizaNumeroDeLineas()
+        {
+            RichTextBox principal = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+            RichTextBox lineas = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[0];
+            lineas.Text = "";
+            if (principal.Lines.Count() > 0)
+            {
+                int linenumber = principal.Lines.Count();
+                if (devuelvemeAltura(linenumber) > tabControl1.TabPages[tabControl1.SelectedIndex].Height)
+                {
+                    principal.Height = devuelvemeAltura(linenumber);
+                    lineas.Height = devuelvemeAltura(linenumber);
+                }
+                else
+                {
+                    principal.Height = tabControl1.Height-30;
+                    lineas.Height = tabControl1.Height - 30;
+                }
+                for(int i = 0; i<linenumber; i++)
+                {
+                    lineas.Text = lineas.Text+ i + "\n";
+                }
+            }
+        }
+
+        //Colorando Texto
+
         #endregion
+
+        private void TrackPosition_Tick(object sender, EventArgs e)//ACTUALIZA LA LINEA POSICIÓN DEL LIENZO EN QUE SE TRABAJA
+        {
+            if (tabControl1.TabPages.Count > 0)
+            {
+                TabPage tab = (TabPage)tabControl1.TabPages[tabControl1.SelectedIndex];
+                RichTextBox aux = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+                int line = aux.GetLineFromCharIndex(aux.GetFirstCharIndexOfCurrentLine());
+                int colum = 1 + aux.SelectionStart - aux.GetFirstCharIndexOfCurrentLine();
+                LienzoNombre.Text = tab.Text;
+                label2.Text = "Linea: " + line.ToString() + " Columna: " + colum.ToString();
+            }  
+        }
     }
 }
