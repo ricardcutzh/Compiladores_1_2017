@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Lienzo2D.Analizador;
 
 namespace Lienzo2D
 {
@@ -250,7 +251,31 @@ namespace Lienzo2D
 
         private void toolStripButton7_Click(object sender, EventArgs e)
         {
-            syntaxColoring();
+            //syntaxColoring();
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages.Count > 0)
+            {
+                TabPage tab = (TabPage)tabControl1.TabPages[tabControl1.SelectedIndex];
+                RichTextBox EntradaAnalizar = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+                bool restult = Sintactico.analizar(EntradaAnalizar.Text);
+                if (restult)
+                {
+                    Resultado.Text = "Válido";
+                    Resultado.ForeColor = Color.Green;
+                }
+                else
+                {
+                    Resultado.Text = "Inválido";
+                    Resultado.ForeColor = Color.Red;
+                }
+            }
+            else
+            {
+                MessageBox.Show("No hay Pestañas abiertas", "Error al Ejecutar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
