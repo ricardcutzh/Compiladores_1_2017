@@ -12,6 +12,8 @@ using Lienzo2D.Analizador;
 using Lienzo2D.Clases;
 using Lienzo2D.Graficacion;
 using System.Diagnostics;
+using System.Text;
+using System.IO;
 
 namespace Lienzo2D
 {
@@ -68,13 +70,16 @@ namespace Lienzo2D
 
         private void toolStripButton1_Click(object sender, EventArgs e)//NUEVO LIENZO
         {
-            String nombre = Microsoft.VisualBasic.Interaction.InputBox("Nombre del Archivo: ", "New File (Nuevo Archivo)", "Nuevo", 100, 100);
-            agregarUnaTabNueva(nombre);
+            String nombre = Microsoft.VisualBasic.Interaction.InputBox("Nombre del Archivo: ", "New File (Nuevo Archivo)", "", 100, 100);
+            if (nombre != "")
+            {
+                agregarUnaTabNueva(nombre);
+            }
         }
 
 
         #region CODIGO DE TABS DINAMICAS
-        //agregar una nueva tab al editor de texto
+        //agregar una nueva tab al editor de texto Cuando Se crea un archivo en blanco
         private void agregarUnaTabNueva(String nombre)
         {
             TabPage nueva = new TabPage(nombre + ".lz");
@@ -106,6 +111,39 @@ namespace Lienzo2D
             pan.Controls.Add(textEditor);// posición 1 del panel
             nueva.Controls.Add(pan);// posicion 0 del tabpage
             tabControl1.TabPages.Add(nueva);
+        }
+
+        private void addNewTabFromFile(String archivo, String texto)
+        {
+            TabPage nueva = new TabPage(archivo);
+            Panel pan = new Panel();
+            pan.AutoScroll = false;
+            pan.HorizontalScroll.Enabled = false;
+            pan.HorizontalScroll.Visible = false;
+            pan.HorizontalScroll.Maximum = 0;
+            pan.AutoScroll = true;
+            pan.SetBounds(0, 0, tabControl1.Width - 10, tabControl1.Height - 10);
+            nueva.Controls.Add(pan);
+            RichTextBox textEditor = new RichTextBox();
+            RichTextBox numl = new RichTextBox();
+            numl.ReadOnly = true;
+            numl.Font = new Font("Consolas", 8);
+            numl.SetBounds(0, 0, 30, tabControl1.Height - 30);
+            numl.Text = "0";
+            numl.WordWrap = false;
+            numl.ScrollBars = RichTextBoxScrollBars.None;
+            textEditor.SetBounds(30, 0, tabControl1.Width - 60, tabControl1.Height - 30);
+            textEditor.AcceptsTab = true;
+            textEditor.Font = new Font("Consolas", 8);
+            textEditor.WordWrap = false;
+            textEditor.Text = texto;
+            textEditor.TextChanged += new EventHandler(eventocambio);
+            textEditor.ScrollBars = RichTextBoxScrollBars.None;
+            pan.Controls.Add(numl);//posición 0 del panel
+            pan.Controls.Add(textEditor);// posición 1 del panel
+            nueva.Controls.Add(pan);// posicion 0 del tabpage
+            tabControl1.TabPages.Add(nueva);
+           
         }
 
         //Actualizando el contador de lineas para cada tab
@@ -322,6 +360,22 @@ namespace Lienzo2D
                     Process.Start("C:\\Reportes\\ReporteErrores.html");
                 }
 
+            }
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)//ABRIR ARCHIVO CON EXTENSION .lz
+        {
+            Stream str;
+            OpenFileDialog abrir = new OpenFileDialog();
+            abrir.Filter = "lz Files |*.lz";
+            if(abrir.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {   
+                if((str = abrir.OpenFile()) != null)
+                {
+                    string archivo = abrir.FileName;
+                    string texto = File.ReadAllText(archivo);
+                    addNewTabFromFile(abrir.SafeFileName, texto);
+                }
             }
         }
     }
