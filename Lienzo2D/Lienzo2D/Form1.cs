@@ -383,5 +383,30 @@ namespace Lienzo2D
                 }
             }
         }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages.Count > 0)
+            {
+                TabPage aux = tabControl1.TabPages[tabControl1.SelectedIndex];
+                RichTextBox auxr = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+                SaveFileDialog guardar = new SaveFileDialog();
+                if (guardar.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        StreamWriter wr = new StreamWriter(guardar.FileName + ".lz");
+                        wr.Write(auxr.Text);
+                        wr.Close();
+                        MessageBox.Show("Archivo Guardado: " + guardar.FileName);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error en la escritura de archivo", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    
+                }
+            }
+        }
     }
 }
