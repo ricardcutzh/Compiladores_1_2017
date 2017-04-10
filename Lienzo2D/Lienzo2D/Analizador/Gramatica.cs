@@ -165,13 +165,17 @@ namespace Lienzo2D.Analizador
             #region Gramatica
             //------------------GRAMATICA DEL CUERPO GENERAL DEL LIENZO--------------------------
 
-            INICIO.Rule = VISIBILIDAD + Lienzo + identificador + EXTIENDE + opk + CUERPOLIENZO + clk;
+            INICIO.Rule = VISIBILIDAD + Lienzo + identificador + EXTIENDE + opk + CUERPOLIENZO + clk
+                         | SyntaxError + clk;
             VISIBILIDAD.Rule = publico
                             | privado
+                            | SyntaxError
                             | Empty;
             EXTIENDE.Rule = extiende + LISTADOEX
+                            |SyntaxError
                             | Empty;
             LISTADOEX.Rule = LISTADOEX + com + LISTADOEX
+                            | SyntaxError
                             | identificador;
 
             //------------------CUERPO DEL LIENZO ------------------------------------------------
@@ -179,59 +183,73 @@ namespace Lienzo2D.Analizador
             CUERPOLIENZO.Rule = PRINCIPAL + OTROS
                              | VARGLOBALES + CUERPOLIENZO
                              | PRO_FUNC + CUERPOLIENZO
+                             //| SyntaxError + finSent
                              | Empty;
 
             PRINCIPAL.Rule = principal + opp + clp + opk + SENTENCIAS + clk
+                            | SyntaxError + clk
                             | Empty;
+
             OTROS.Rule = VARGLOBALES + OTROS
                          | PRO_FUNC + OTROS
+                         | SyntaxError
                          | Empty;
 
             //------------------DECLARACION DE VARIABLES GLOBALES --------------------------------
             VARGLOBALES.Rule = CONSERVAR + vr + TIPO + TIPOASIGNACION + finSent
                             | SyntaxError + finSent;
             TIPOASIGNACION.Rule = ASIGNACION
-                            | arreglo + ASIGNACIONARR + DIMENSIONES + LLENADOARR;
+                            |arreglo + ASIGNACIONARR + DIMENSIONES + LLENADOARR
+                            |SyntaxError;
             CONSERVAR.Rule = conservar
+                            | SyntaxError
                             | Empty;
             TIPO.Rule = Ent
-                       | doble
-                       | Booleano
-                       | caract
-                       | cad;
+                       |doble
+                       |Booleano
+                       |caract
+                       |cad
+                       |SyntaxError;
             ASIGNACION.Rule = ASIGNACION + com + ASIGNACION
                        | identificador
-                       | identificador + igual + EXPR;
+                       | identificador + igual + EXPR
+                       |SyntaxError;
 
             ASIGNACIONARR.Rule = ASIGNACIONARR + com + ASIGNACIONARR
-                       | identificador;
+                       | identificador
+                       |SyntaxError;
 
             DIMENSIONES.Rule = opb + EXPR + clb + DIMENSIONES
                        | opb + EXPR + clb
-                       | SyntaxError + clb;
+                       | SyntaxError;
 
             LLENADOARR.Rule = igual + opl + LISTADOARR + cll
                        | igual + RESULTADOFUN
+                       | SyntaxError
                        | Empty;
 
             LISTADOARR.Rule = LISTADOARR + com + LISTADOARR
                        | opl + LISTADOARR + cll
-                       | SyntaxError + cll
+                       | SyntaxError
                        | EXPR;
 
             //EXPRESIONES PARA OPERACIONES
-            EXPR.Rule = E;
+            EXPR.Rule = E
+                |SyntaxError;
 
             E.Rule = E + mas + T
                    | E + menos + T
-                   | T;
+                   | T
+                   | SyntaxError;//agregado
 
             T.Rule = T + por + G
                    | T + div + G
-                   | G;
+                   | G
+                   | SyntaxError;
 
             G.Rule = G + pot + F
-                   | F;
+                   | F
+                   | SyntaxError;
 
             F.Rule = opp + E + clp
                    | identificador
@@ -242,20 +260,25 @@ namespace Lienzo2D.Analizador
                    | fals
                    | caracter
                    | RESULTADOFUN
-                   | cadena;
+                   | cadena
+                   | SyntaxError;
 
-            EXPRPRIMA.Rule = EP;
+            EXPRPRIMA.Rule = EP
+                    |SyntaxError;
 
             EP.Rule = EP + mas + TP
                     | EP + menos + TP
-                    | TP;
+                    | TP
+                    |SyntaxError;
 
             TP.Rule = TP + por + GP
                     | TP + div + GP
-                    | GP;
+                    | GP
+                    |SyntaxError;
 
             GP.Rule = GP + pot + FP
-                    | FP;
+                    | FP
+                    |SyntaxError;
 
             FP.Rule = opp + EP + clp
                    | opp + RELACIONALES + clp
@@ -268,23 +291,27 @@ namespace Lienzo2D.Analizador
                    | fals
                    | caracter
                    | RESULTADOFUN
-                   | cadena;
+                   | cadena
+                   | SyntaxError;
 
 
             //ELIGE ENTRE PROCEDIMIENTOS Y FUNCIONES
 
-            PRO_FUNC.Rule = CONSERVAR + VISIBILIDAD + PRO_FUNCP;
+            PRO_FUNC.Rule = CONSERVAR + VISIBILIDAD + PRO_FUNCP
+                            |SyntaxError;
 
             PRO_FUNCP.Rule = PROCEDIMIENTOS
-                            | TIPO + FUNCIONES;
+                            | TIPO + FUNCIONES
+                            |SyntaxError;
 
             //GRAMATICA DE PROCEDIMIENTOS
 
             PROCEDIMIENTOS.Rule = identificador + opp + PARAMETROS + clp + opk + SENTENCIAS + clk
-                                | SyntaxError + clk;
+                                | SyntaxError+clk;
 
             PARAMETROS.Rule = PARAMETROS + com + PARAMETROS
                             | TIPO + identificador
+                            | SyntaxError
                             | Empty;
 
             // GRAMATICA DE FUNCIONES
@@ -293,16 +320,19 @@ namespace Lienzo2D.Analizador
                             | SyntaxError + clk;
 
             DIM.Rule = opb + clb + DIM
+                      |SyntaxError
                       | Empty;
 
             RETORNAR.Rule = ret + identificador
-                            | ret + EXPR;
+                            | ret + EXPR
+                            |SyntaxError;
 
             // GRAMATICA DE ASINACION DE VALOR DE VARIABLES
             ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent
                             | SyntaxError + finSent;
 
             DIMOPCIONAL.Rule = DIMENSIONES
+                            | SyntaxError
                             | Empty;
 
             //VARIABLES LOCALES 
@@ -322,36 +352,43 @@ namespace Lienzo2D.Analizador
                             | FUN_PRO + SENTENCIAS
                             | SENTE_AU + SENTENCIAS
                             | SENTE_DEC + SENTENCIAS
+                            | SyntaxError + finSent
                             | Empty;
 
             //SENTENCIA SI
             SENTENCIA_SI.Rule = si + opp + CONDICIONES + clp + opk + SENTENCIAS + clk + SINO
-                                | SyntaxError + clk;
+                                | SyntaxError;
 
 
             SINO.Rule = sino + opk + SENTENCIAS + clk
                       | SyntaxError + clk
                       | Empty;
 
-            CONDICIONES.Rule = EXPLOGICA;
+            CONDICIONES.Rule = EXPLOGICA
+                            |SyntaxError;
 
             //EXPRESIONES LOGICAS
-            EXPLOGICA.Rule = B;
+            EXPLOGICA.Rule = B
+                            | SyntaxError;
 
             B.Rule = B + or + C
                    | B + nor + C
                    | B + xor + C
-                   | C;
+                   | C
+                   | SyntaxError;
 
             C.Rule = C + and + D
                    | C + nand + D
-                   | D;
+                   | D
+                   |SyntaxError;
 
             D.Rule = not + RELACIONALES
-                   | RELACIONALES;
+                   | RELACIONALES
+                   | SyntaxError;
 
             //EXPRESIONES RELACIONALES
-            RELACIONALES.Rule = A;
+            RELACIONALES.Rule = A
+                               |SyntaxError;
 
             A.Rule = A + igualacion + A
                    | A + diferenciacion + A
@@ -359,23 +396,26 @@ namespace Lienzo2D.Analizador
                    | A + mayorIgual + A
                    | A + menorIgual + A
                    | A + mayorque + A
-                   | EXPRPRIMA;
+                   | EXPRPRIMA
+                   |SyntaxError;
 
             //SENTENCIA PARA 
             SENTENCIA_PARA.Rule = para + opp + ASIGNACIONPARA + pc + RELACIONALES + pc + ACCIONES + clp + opk + SENTENCIAS + clk
-                                | SyntaxError + clk;
+                                | SyntaxError;
             ASIGNACIONPARA.Rule = vr + TIPO + identificador + igual + EXPR
-                                | identificador + igual + EXPR;
+                                | identificador + igual + EXPR
+                                | SyntaxError;
             ACCIONES.Rule = identificador + mas + mas
-                            | identificador + menos + menos;
+                            | identificador + menos + menos
+                            | SyntaxError;
 
             //SENTENCIA MIENTRAS
             SENTENCIA_MIENTRAS.Rule = mientras + opp + CONDICIONES + clp + opk + SENTENCIAS + clk
-                                    | SyntaxError + clk;
+                                    | SyntaxError;
 
             //SENTENCIAS HACER 
             SENTENCIA_HACER.Rule = hacer + opk + SENTENCIAS + clk + mientras + opp + CONDICIONES + clp
-                                | SyntaxError + clk;
+                                | SyntaxError;
 
             //FUNCIONES NATIVAS DEL LENGUAJE
             PINTAR_PUNTO.Rule = pintarp + opp + EXPR + com + EXPR + com + EXPR + com + EXPR + clp + finSent
@@ -399,12 +439,13 @@ namespace Lienzo2D.Analizador
 
             //RESULTADO FUNCIONES
             RESULTADOFUN.Rule = identificador + opp + LISTADOEXPRE + clp
-                             | SyntaxError + clp;
+                             | SyntaxError;
 
             //LISTADO DE EXPRESIONES QUE SE RECIBEN
             LISTADOEXPRE.Rule = LISTADOEXPRE + com + LISTADOEXPRE
                                | EXPR
-                               | Empty;
+                               | Empty
+                               | SyntaxError;
 
             #endregion
 
@@ -414,6 +455,8 @@ namespace Lienzo2D.Analizador
             this.Root = INICIO;
             //LanguageFlags = LanguageFlags.CreateAst;
             #endregion
+
+            
         }
 
         public override void ReportParseError(ParsingContext context)
@@ -434,6 +477,7 @@ namespace Lienzo2D.Analizador
             else
             {
                 tipo = "Error Sintactico";
+                error = "Token No esperado, se encontro: " + error;
             }
             fila = context.Source.Location.Line;
             columna = context.Source.Location.Column;

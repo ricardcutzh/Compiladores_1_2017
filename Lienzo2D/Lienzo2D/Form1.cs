@@ -309,11 +309,16 @@ namespace Lienzo2D
                 {
                     Resultado.Text = "Válido";
                     Resultado.ForeColor = Color.Green;
+                    if (Sintactico.errores.Count > 0)
+                    {
+                        MessageBox.Show("El analisis del archivo aun contiene errores", "Errores en Entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                     
                 }
                 else
                 {
                     Resultado.Text = "Inválido";
+                    MessageBox.Show("El analisis del archivo aun contiene errores sin recuperación", "Errores en Entrada", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Resultado.ForeColor = Color.Red;
                 }
             }

@@ -99,7 +99,7 @@ namespace Lienzo2D.Graficacion
                 StreamWriter wr = new StreamWriter("C:\\Reportes\\ReporteErrores.html");
                 wr.WriteLine("<html>");
                 wr.WriteLine("<head>");
-                wr.WriteLine("<title>Arbol AST | Lienzo 2D</title>");
+                wr.WriteLine("<title>Reporte de Errores | Lienzo 2D</title>");
                 wr.WriteLine("<link href=\"bootstrap/css/bootstrap.min.css\" rel=\"stylesheet\">");
                 wr.WriteLine("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css \" integrity=\"sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u\" crossorigin=\"anonymous\">");
                 wr.WriteLine("</head>");
