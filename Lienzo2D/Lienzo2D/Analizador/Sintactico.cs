@@ -21,6 +21,7 @@ namespace Lienzo2D.Analizador
             Parser parser = new Parser(lenguaje);
             ParseTree arbol = parser.Parse(cadena);
             ParseTreeNode raiz = arbol.Root;
+            raizDeArbol = raiz;
             errores = gramatica.getErrores();
             if (raiz == null)
             {
