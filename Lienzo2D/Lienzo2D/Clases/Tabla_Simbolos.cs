@@ -10,26 +10,34 @@ namespace Lienzo2D.Clases
 {
     class Tabla_Simbolos
     {
-        List<Simbolo> Tabla = new List<Simbolo>();
-        Stack<String> ambitos = new Stack<string>();
-        List<Simbolo> auxiliar = new List<Simbolo>();
-        ParseTreeNode raizAST;
+        String tipo_actual_evaluado; //TIPO DE VARIABLE ACTUAL EVALUADA
+
+        List<Simbolo> Tabla = new List<Simbolo>(); //TABLA DE SIMBOLOS
+
+        Stack<String> ambitos = new Stack<string>();//PILA DE AMBITOS
+
+        List<Simbolo> auxiliar = new List<Simbolo>(); //LISTA AUXILIAR PARA ALMACENAR SIMBOLOS TEMPORALMENTE
+
+        ParseTreeNode raizAST;//RAÍZ DEL ARBOL CON EL QUE EMPIEZO EL RECORRIDO
+
+        List<Variable> variables = new List<Variable>();//LISTA DE TODAS LAS VARIABLES QUE EXISTEN EN EN LIENZO ANALIZADO
+
         public Tabla_Simbolos(ParseTreeNode raiz)
         {
             this.raizAST = raiz;
         }
 
-        public List<Simbolo> getTable()
+        public List<Simbolo> getTable()//OBTENER LA TABLA ACTUAL
         {
             return this.Tabla;
         }
 
-        public void generarme_tabla()
+        public void generarme_tabla()//METODO PUBLICO PARA ACCEDER AL ARBOL 
         {
             generarTabla(this.raizAST);
         }
 
-        public object generarTabla(ParseTreeNode raiz)
+        private object generarTabla(ParseTreeNode raiz)
         {
             string Inicio = raiz.ToString();
             ParseTreeNode[] hijos = null;
@@ -107,19 +115,25 @@ namespace Lienzo2D.Clases
                             bool conservar = seConserva(generarTabla(hijos[0]).ToString());
                             //debo de retornar en la producción tipo, el tipo especificado
                             string tipo = generarTabla(hijos[2]).ToString();
+                            this.tipo_actual_evaluado = tipo;//TIPO ACTUAL DE VARIABLES EVALUADO
                             //me va a retornar un simbolo en la prducción tipo asignación
                             generarTabla(hijos[3]);//mete los valores a la lista auxiliar
                             string ambito = ambitos.Peek();
                             foreach(Simbolo c in auxiliar)
                             {//aqui podría hacer las comprobaciones semánticas
+                                //SIMBOLOS
                                 c.visibilidad = visibi;
                                 c.conservar = conservar;
                                 c.tipo = tipo;
                                 c.ambito = ambito;
                                 Tabla.Add(c);
+                                //VARIABLES:
+                                Variable var = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, true);
+                                variables.Add(var);                        
                             }
                             //LIBERO LA LISTA
                             auxiliar.Clear();
+                            tipo_actual_evaluado = null;//se reestablece el tipo global evaluado
 
                         }
                         break;
@@ -153,24 +167,27 @@ namespace Lienzo2D.Clases
                     }
                 case "ASIGNACION":
                     {
-                        if (raiz.ChildNodes.Count() == 1)
+                        if (raiz.ChildNodes.Count() == 1)//ASIGNAICIÓN SOLO PRODUCE UN IDENTIFICADOR
                         {
                             Simbolo aux = new Simbolo();
                             aux.nombre = hijos[0].ToString().Replace("(identificador)","");
                             aux.valor = null;
-                            auxiliar.Add(aux);
+                            auxiliar.Add(aux);//AÑADO A LISTA AUXILIAR
                         }
-                        if(raiz.ChildNodes.Count() == 2)
+                        if(raiz.ChildNodes.Count() == 2)//CUANDO VIENE UNA ASIGNACIÓN DE UNA VARIABLE CON SU VALOR
                         {
+                            //PENDIENTE DE VERIFICAR SU VALOR
                             Simbolo aux = new Simbolo();
                             aux.nombre = hijos[0].ToString().Replace("(identificador)", "");
-                            //aux.valor = a lo que retorne expresiones
-                            //añadir a lista auxiliar
+                            //evaluo una nueva expresión
+                            //Expresion expr = new Expresion(this.tipo_actual_evaluado, this.variables, ambitos.Peek());
+                            //aux.valor = expr.recorre_expresion(hijos[1]).ToString();//RECORRO LA EXPRESIÓN PARA OBTENER EL VALOR
+                            //this.auxiliar.Add(aux);//añado a la lista auxiliar
                         }
-                        if(raiz.ChildNodes.Count() == 3)
+                        if(raiz.ChildNodes.Count() == 3)//ASIGNACIÓN PRODUCE UN LISTADO DE IDS
                         {
-                            generarTabla(hijos[0]);
-                            generarTabla(hijos[2]);
+                            generarTabla(hijos[0]);//ME VOY A ASIGNACIÓN DE UN HIJO
+                            generarTabla(hijos[2]);//ASIGNACIÓN RECURSIVA
                         }
                         break;
                     } 

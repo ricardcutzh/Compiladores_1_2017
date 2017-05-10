@@ -59,8 +59,11 @@
     <Compile Include="Analizador\Gramatica.cs" />
     <Compile Include="Analizador\Sintactico.cs" />
     <Compile Include="Clases\ArbolSintactico.cs" />
+    <Compile Include="Clases\Elemento.cs" />
+    <Compile Include="Clases\Expresion.cs" />
     <Compile Include="Clases\Simbolo.cs" />
     <Compile Include="Clases\Tabla_Simbolos.cs" />
+    <Compile Include="Clases\Variable.cs" />
     <Compile Include="Editor.cs">
       <SubType>Component</SubType>
     </Compile>
