@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
-
+using Lienzo2D.Analizador;
+using System.Windows.Forms;
 namespace Lienzo2D.Clases
 {
     class Tabla_Simbolos
@@ -17,6 +18,8 @@ namespace Lienzo2D.Clases
         Stack<String> ambitos = new Stack<string>();//PILA DE AMBITOS
 
         List<Simbolo> auxiliar = new List<Simbolo>(); //LISTA AUXILIAR PARA ALMACENAR SIMBOLOS TEMPORALMENTE
+
+        List<Parametro> paraux = new List<Parametro>();//LISTA AUXILIAR DE PARAMETROS
 
         ParseTreeNode raizAST;//RAÍZ DEL ARBOL CON EL QUE EMPIEZO EL RECORRIDO
 
@@ -91,9 +94,10 @@ namespace Lienzo2D.Clases
                         {
                             //CAPTURO EL MÉTODO PRINCIPAL
                             string nombre = hijos[0].ToString().Replace(" (Keyword)", "");
-                            ambitos.Push(nombre);
                             Simbolo nuevo = new Simbolo(nombre, "Main", "No Aplica", "No Aplica", ambitos.Peek(),false);
+                            ambitos.Push(nombre);
                             Tabla.Add(nuevo);
+                            ambitos.Pop();//SALGO DEL AMBITO PRINCIPAL
                         }
                         break;
                     }
@@ -135,6 +139,115 @@ namespace Lienzo2D.Clases
                             auxiliar.Clear();
                             tipo_actual_evaluado = null;//se reestablece el tipo global evaluado
 
+                        }
+                        break;
+                    }
+                case "PRO_FUNC":
+                    {
+                        if (raiz.ChildNodes.Count() == 3) //PRO_FUNC ::= CONSERVAR VISIBILIDAD + PRO_FUNCP
+                        {
+                            Boolean conservar = seConserva(hijos[0].ToString());//VIENDO SI SE CONSERVA
+                            String visibilidad = generarTabla(hijos[1]).ToString();//OBTENIENDO VISIVILIDIAD
+                            Simbolo simbol = (Simbolo)generarTabla(hijos[2]);//SIMBOLO QUE DETERMINA SI ES FUNCION O PROCEDIMIENTO
+                            if(simbol != null)
+                            {
+                                simbol.conservar = conservar;
+                                simbol.visibilidad = visibilidad;
+                                this.Tabla.Add(simbol);
+                            }
+                            //debo de capturar los parametros que tienen
+                            this.paraux.Clear();
+                            ambitos.Pop();
+                        }
+                        break;
+                    }
+                case "PRO_FUNCP":
+                    {
+                        if (raiz.ChildNodes.Count() == 1) //::= PROCEDIMIENTOS
+                        {
+                            return generarTabla(hijos[0]);
+                        }
+                        if(raiz.ChildNodes.Count() == 2)// ::= TIPO  FUNCIONES
+                        {
+                            String tipo = generarTabla(hijos[0]).ToString();
+                            Simbolo simbol = (Simbolo)generarTabla(hijos[1]);
+                            return simbol;
+                        }
+                        break;
+                    }
+                case "PROCEDIMIENTOS":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            //aqui capturo procedimientos
+                            string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                            String tipo = "Procedimiento";
+                            if(nombre == "Principal")
+                            {
+                                tipo = "Main";
+                            }
+                            
+                            //PARAMETROS
+                            generarTabla(hijos[1]);
+                            Simbolo simbolo = new Simbolo(nombre, tipo, "", "No Aplica", ambitos.Peek(), false);
+                            ambitos.Push(nombre);
+
+                            //AQUI FALTAN SENTENCIAS!!!
+
+                            return simbolo;
+
+                        }
+                        break;
+                    }
+                case "FUNCIONES":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)
+                        {
+                            int dim = 0;
+                            dim = (int)generarTabla(hijos[0]);//obtener la dimensión si es que tiene sino tendra 0
+                            string nombre = hijos[1].ToString().Replace(" (identificador)", "");
+                            //PARAMETROS
+                            generarTabla(hijos[2]); 
+                            bool esarreglo = false;
+                            if(dim > 0)
+                            {
+                                esarreglo = true;
+                            }
+                            Simbolo simbolo = new Simbolo(nombre, "Función","", "No Aplica", ambitos.Peek(), false, esarreglo, dim);
+                            ambitos.Push(nombre);
+                            //SENTENCIAS
+                            return simbolo;
+                        }
+                        break;
+                    }
+                case "DIM":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            int retorno = 1;
+                            retorno = retorno + (int)generarTabla(hijos[2]);
+                            return retorno;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                        break;
+                    }
+                case "PARAMETROS":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)//:: PARAMETROS , PARAMETROS
+                        {
+                            generarTabla(hijos[0]);
+                            generarTabla(hijos[2]);
+                        }
+                        if(raiz.ChildNodes.Count() == 2)//TIPO identificador
+                        {
+                            String tipo = generarTabla(hijos[0]).ToString();
+                            String nombre = hijos[1].ToString().Replace(" (identificador)", "");
+                            Parametro parametro = new Parametro(nombre, tipo);
+                            this.paraux.Add(parametro);
+                            
                         }
                         break;
                     }
@@ -190,6 +303,11 @@ namespace Lienzo2D.Clases
                             else
                             {
                                 //SEMANTICOS
+                                List<ErrorEnAnalisis> errores = expr.getErroresSemanticos();
+                                foreach(ErrorEnAnalisis er in errores)
+                                {
+                                    MessageBox.Show(er.getError() + " | Linea: " + er.getLinea() + " | Columna: " + er.getColumna());
+                                }
                             }
                         }
                         if(raiz.ChildNodes.Count() == 3)//ASIGNACIÓN PRODUCE UN LISTADO DE IDS

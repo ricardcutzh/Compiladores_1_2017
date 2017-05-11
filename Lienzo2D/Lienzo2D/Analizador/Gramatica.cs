@@ -132,6 +132,7 @@ namespace Lienzo2D.Analizador
             ASIGNAVAR = new NonTerminal("ASIGNAVAR"),
             DIMOPCIONAL = new NonTerminal("DIMOPCIONAL"),
             SENTENCIAS = new NonTerminal("SENTENCIAS"),
+            SENTENCIASP = new NonTerminal("SENTENCIASP"),
             SENTENCIA_SI = new NonTerminal("SENTENCIA_SI"),
             CONDICIONES = new NonTerminal("CONDICIONES"),
             SINO = new NonTerminal("SINO"),
@@ -316,7 +317,7 @@ namespace Lienzo2D.Analizador
 
             // GRAMATICA DE FUNCIONES
 
-            FUNCIONES.Rule = DIM + identificador + opp + PARAMETROS + clp + opk + SENTENCIAS + RETORNAR + finSent + clk
+            FUNCIONES.Rule = DIM + identificador + opp + PARAMETROS + clp + opk + SENTENCIASP + clk
                             | SyntaxError + clk;
 
             DIM.Rule = opb + clb + DIM
@@ -352,6 +353,22 @@ namespace Lienzo2D.Analizador
                             | FUN_PRO + SENTENCIAS
                             | SENTE_AU + SENTENCIAS
                             | SENTE_DEC + SENTENCIAS
+                            | SyntaxError + finSent
+                            | Empty;
+
+            //SENTENCIAS DENTRO DE FUNCIONES
+            SENTENCIASP.Rule = VARLOCALES + SENTENCIASP
+                            | ASIGNAVAR + SENTENCIASP
+                            | SENTENCIA_SI + SENTENCIASP
+                            | SENTENCIA_MIENTRAS + SENTENCIASP
+                            | SENTENCIA_PARA + SENTENCIASP
+                            | SENTENCIA_HACER + SENTENCIASP
+                            | PINTAR_PUNTO + SENTENCIASP
+                            | PINTAR_OR + SENTENCIASP
+                            | FUN_PRO + SENTENCIASP
+                            | SENTE_AU + SENTENCIASP
+                            | SENTE_DEC + SENTENCIASP
+                            | RETORNAR + finSent + SENTENCIASP
                             | SyntaxError + finSent
                             | Empty;
 
