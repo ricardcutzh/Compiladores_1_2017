@@ -181,8 +181,16 @@ namespace Lienzo2D.Clases
                             aux.nombre = hijos[0].ToString().Replace(" (identificador)", "");
                             //evaluo una nueva expresión
                             Expresion expr = new Expresion(this.tipo_actual_evaluado, this.variables, ambitos.Peek());
-                            aux.valor = expr.recorre_expresion(hijos[1]).ToString();//RECORRO LA EXPRESIÓN PARA OBTENER EL VALOR
-                            this.auxiliar.Add(aux);//añado a la lista auxiliar
+                            Elemento ele = (Elemento)expr.recorre_expresion(hijos[1]);
+                            if(ele != null)
+                            {
+                                aux.valor = ele.valor;//RECORRO LA EXPRESIÓN PARA OBTENER EL VALOR
+                                this.auxiliar.Add(aux);//añado a la lista auxiliar
+                            }
+                            else
+                            {
+                                //SEMANTICOS
+                            }
                         }
                         if(raiz.ChildNodes.Count() == 3)//ASIGNACIÓN PRODUCE UN LISTADO DE IDS
                         {

@@ -7,7 +7,7 @@ using Irony.Ast;
 using Irony.Interpreter;
 using Irony.Parsing;
 using System.Windows.Forms;
-
+using Lienzo2D.Analizador;
 namespace Lienzo2D.Clases
 {
     class Expresion//CLASE PARA LA EVALUACIÓN DE EXPRESIONES (HACE VALIDACIÓNES SEMÁNTICAS)
@@ -15,6 +15,9 @@ namespace Lienzo2D.Clases
         string tipo;//TIPO DE LA EXPRESIÓN QUE SE ESTÁ VALUANDO
         List<Variable> vars;//LISTADO DE VARIABLES ACTUALES ANALIZADAS
         string ambito; //ambito el que me encuentro
+
+        //LISTA DE ERRORES SEMANTICOS ENCONTRADOS EN EXPRESIONES:
+        List<ErrorEnAnalisis> SemanticosExpr = new List<ErrorEnAnalisis>();
 
         public Expresion(String tipo)//PARA EL CONSTRUCTOR LE ENVÍO UN TÍPO
         {
@@ -26,6 +29,7 @@ namespace Lienzo2D.Clases
         {
             this.tipo = tipo;
             this.vars = vars;
+            this.ambito = ambito;
         }
 
         public object recorre_expresion(ParseTreeNode raiz)
@@ -43,10 +47,9 @@ namespace Lienzo2D.Clases
                         if(raiz.ChildNodes.Count() == 1)//EXPR ::= E 
                         {
                             Elemento elemento = (Elemento)recorre_expresion(hijos[0]);
-                            String valor = elemento.valor;
                             //MessageBox.Show(valor);
                             //DEBERÍA DE RETORNAR UN ELEMENTO PARA COMPROBAR SEMANTICAMENTE LOS TIPOS
-                            return valor;
+                            return elemento;
                         }
                         break;
                     }
@@ -81,7 +84,17 @@ namespace Lienzo2D.Clases
                                      }
                                      if (this.tipo == "boolean")
                                      {
-                                            //pendiente
+                                         string a1 = a.valor;
+                                         string b1 = b.valor;
+                                         
+                                         if(operacion_booleana(a1) || operacion_booleana(b1))
+                                        {
+                                            c = new Elemento("true", "boolean");
+                                        }
+                                        else
+                                        {
+                                            c = new Elemento("false", "boolean");
+                                        }
                                      }
                                 }
                             }
@@ -140,7 +153,16 @@ namespace Lienzo2D.Clases
                                     }
                                     if(this.tipo == "boolean")
                                     {
-                                        //PENDIENTE
+                                        string a1 = a.valor;
+                                        string b1 = b.valor;
+                                        if(operacion_booleana(a1) && operacion_booleana(b1))
+                                        {
+                                            c = new Elemento("true", "boolean");
+                                        }
+                                        else
+                                        {
+                                            c = new Elemento("false", "boolean");
+                                        }
                                     }
                                 }
                             }
@@ -241,26 +263,21 @@ namespace Lienzo2D.Clases
                                     //ERROR DE SEMANTICA... LA VARIABLE NO EXISTE O NO ESTA DECLARADA
                                 }
                             }
-                            if (hijos[0].ToString().Contains(" (true)"))
+                            if (hijos[0].ToString().Contains("true"))
                             {
-                                String valor = hijos[0].ToString().Replace(" (true)","");
-                                elemento = new Elemento(valor, "boolean");
+                                //String valor = hijos[0].ToString().Replace(" (true)","");
+                                elemento = new Elemento("true", "boolean");
                             }
-                            if (hijos[0].ToString().Contains(" (true)"))
+                            if (hijos[0].ToString().Contains("false"))
                             {
-                                String valor = hijos[0].ToString().Replace(" (true)", "");
-                                elemento = new Elemento(valor, "boolean");
+                                //String valor = hijos[0].ToString().Replace(" (false)", "");
+                                elemento = new Elemento("false", "boolean");
                             }
-                            if (hijos[0].ToString().Contains(" (false)"))
+                            if (hijos[0].ToString().Contains("E"))
                             {
-                                String valor = hijos[0].ToString().Replace(" (false)", "");
-                                elemento = new Elemento(valor, "boolean");
+                                return recorre_expresion(hijos[0]);
                             }
                             return elemento;
-                        }
-                        if (raiz.ChildNodes.Count() == 3) //F ::= (E) 
-                        {
-                            return recorre_expresion(hijos[1]);
                         }
                         break;
                     }
@@ -370,6 +387,30 @@ namespace Lienzo2D.Clases
                     }
             }
             return retorno;
+        }
+
+        private bool operacion_booleana(string valor)
+        {
+            if (valor.Equals("true"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        private string operacion_boolInv(bool valor)
+        {
+            if (valor)
+            {
+                return "true";
+            }
+            else
+            {
+                return "false";
+            }
         }
     }
 }
