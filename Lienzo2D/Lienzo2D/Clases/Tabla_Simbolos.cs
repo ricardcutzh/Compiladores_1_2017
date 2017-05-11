@@ -53,9 +53,9 @@ namespace Lienzo2D.Clases
                         {
                             
                             string visi = generarTabla(hijos[0]).ToString();
-                            visi = visi.Replace("(Keyword)", "");
-                            string tipo = hijos[1].ToString().Replace("(Keyword)", "");
-                            string nombre = hijos[2].ToString().Replace("(identificador)", "");
+                            visi = visi.Replace(" (Keyword)", "");
+                            string tipo = hijos[1].ToString().Replace(" (Keyword)", "");
+                            string nombre = hijos[2].ToString().Replace(" (identificador)", "");
                             ambitos.Push(nombre);
                             Simbolo nuevo = new Simbolo(nombre, tipo, visi, "No Aplica", ambitos.Peek() , false);
                             Tabla.Add(nuevo);
@@ -90,7 +90,7 @@ namespace Lienzo2D.Clases
                         if (raiz.ChildNodes.Count() == 2)
                         {
                             //CAPTURO EL MÉTODO PRINCIPAL
-                            string nombre = hijos[0].ToString().Replace("(Keyword)", "");
+                            string nombre = hijos[0].ToString().Replace(" (Keyword)", "");
                             ambitos.Push(nombre);
                             Simbolo nuevo = new Simbolo(nombre, "Main", "No Aplica", "No Aplica", ambitos.Peek(),false);
                             Tabla.Add(nuevo);
@@ -152,7 +152,7 @@ namespace Lienzo2D.Clases
                     }
                 case "TIPO":
                     {
-                        string tipo = hijos[0].ToString().Replace("(Keyword)","");
+                        string tipo = hijos[0].ToString().Replace(" (Keyword)","");
                         return tipo;
                         //break;
                     }
@@ -170,7 +170,7 @@ namespace Lienzo2D.Clases
                         if (raiz.ChildNodes.Count() == 1)//ASIGNAICIÓN SOLO PRODUCE UN IDENTIFICADOR
                         {
                             Simbolo aux = new Simbolo();
-                            aux.nombre = hijos[0].ToString().Replace("(identificador)","");
+                            aux.nombre = hijos[0].ToString().Replace(" (identificador)","");
                             aux.valor = null;
                             auxiliar.Add(aux);//AÑADO A LISTA AUXILIAR
                         }
@@ -178,11 +178,11 @@ namespace Lienzo2D.Clases
                         {
                             //PENDIENTE DE VERIFICAR SU VALOR
                             Simbolo aux = new Simbolo();
-                            aux.nombre = hijos[0].ToString().Replace("(identificador)", "");
+                            aux.nombre = hijos[0].ToString().Replace(" (identificador)", "");
                             //evaluo una nueva expresión
-                            //Expresion expr = new Expresion(this.tipo_actual_evaluado, this.variables, ambitos.Peek());
-                            //aux.valor = expr.recorre_expresion(hijos[1]).ToString();//RECORRO LA EXPRESIÓN PARA OBTENER EL VALOR
-                            //this.auxiliar.Add(aux);//añado a la lista auxiliar
+                            Expresion expr = new Expresion(this.tipo_actual_evaluado, this.variables, ambitos.Peek());
+                            aux.valor = expr.recorre_expresion(hijos[1]).ToString();//RECORRO LA EXPRESIÓN PARA OBTENER EL VALOR
+                            this.auxiliar.Add(aux);//añado a la lista auxiliar
                         }
                         if(raiz.ChildNodes.Count() == 3)//ASIGNACIÓN PRODUCE UN LISTADO DE IDS
                         {

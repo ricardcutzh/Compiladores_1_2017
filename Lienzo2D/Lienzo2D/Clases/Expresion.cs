@@ -45,6 +45,7 @@ namespace Lienzo2D.Clases
                             Elemento elemento = (Elemento)recorre_expresion(hijos[0]);
                             String valor = elemento.valor;
                             //MessageBox.Show(valor);
+                            //DEBERÍA DE RETORNAR UN ELEMENTO PARA COMPROBAR SEMANTICAMENTE LOS TIPOS
                             return valor;
                         }
                         break;
@@ -57,26 +58,54 @@ namespace Lienzo2D.Clases
                         }
                         if(raiz.ChildNodes.Count() == 3) //E::= E + T | E - T 
                         {
-                            if(hijos[1].ToString().Contains("+"))
+                            Elemento a = (Elemento)recorre_expresion(hijos[0]);
+                            Elemento b = (Elemento)recorre_expresion(hijos[2]);
+                            Elemento c = null;
+                            if (hijos[1].ToString().Contains("+"))
                             {
-                                Elemento a = (Elemento)recorre_expresion(hijos[0]);
-                                Elemento b = (Elemento)recorre_expresion(hijos[2]);
-                                Elemento c = null;
                                 if (comprobarOperacion(a, b, "+"))
+                                {
+                                    if (this.tipo == "entero")
+                                     {
+                                        int num1 = Convert.ToInt32(a.valor);
+                                        int num2 = Convert.ToInt32(b.valor);
+                                        int res = num1 + num2;
+                                        c = new Elemento(res.ToString(), "entero");
+                                     }
+                                     if (this.tipo == "doble")
+                                     {
+                                         double num1 = Convert.ToDouble(a.valor);
+                                         double num2 = Convert.ToDouble(b.valor);
+                                         double resp = num1 + num2;
+                                         c = new Elemento(resp.ToString(), "doble");
+                                     }
+                                     if (this.tipo == "boolean")
+                                     {
+                                            //pendiente
+                                     }
+                                }
+                            }
+                            else
+                            {
+                                if (comprobarOperacion(a, b, "-"))
                                 {
                                     if(this.tipo == "entero")
                                     {
                                         int num1 = Convert.ToInt32(a.valor);
                                         int num2 = Convert.ToInt32(b.valor);
-                                        int res = num1 + num2;
+                                        int res = num1 - num2;
                                         c = new Elemento(res.ToString(), "entero");
                                     }
-                                }
-                                else
-                                {
-                                    //ERROR DE SEMANTICA
+                                    if(this.tipo == "doble")
+                                    {
+                                        double num1 = Convert.ToDouble(a.valor);
+                                        double num2 = Convert.ToDouble(b.valor);
+                                        double resp = num1 - num2;
+                                        c = new Elemento(resp.ToString(), "doble");
+                                    }
                                 }
                             }
+                            return c;
                         }
                         break;
                     }
@@ -88,7 +117,54 @@ namespace Lienzo2D.Clases
                         }
                         if (raiz.ChildNodes.Count() == 3) //T::= T * G | T / G 
                         {
-                            //PENDIENTE
+                            Elemento a = (Elemento)recorre_expresion(hijos[0]);
+                            Elemento b = (Elemento)recorre_expresion(hijos[2]);
+                            Elemento c = null;
+                            if (hijos[1].ToString().Contains("*"))
+                            {
+                                if (comprobarOperacion(a, b, "*"))
+                                {
+                                    if(this.tipo == "entero")
+                                    {
+                                        int num1 = Convert.ToInt32(a.valor);
+                                        int num2 = Convert.ToInt32(b.valor);
+                                        int res = num1 * num2;
+                                        c = new Elemento(res.ToString(), "entero");
+                                    }
+                                    if(this.tipo == "doble")
+                                    {
+                                        double num1 = Convert.ToDouble(a.valor);
+                                        double num2 = Convert.ToDouble(b.valor);
+                                        double res = num1 * num2;
+                                        c = new Elemento(res.ToString(), "doble");
+                                    }
+                                    if(this.tipo == "boolean")
+                                    {
+                                        //PENDIENTE
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (comprobarOperacion(a, b, "/"))
+                                {
+                                    if(this.tipo == "entero")
+                                    {
+                                        double num1 = Convert.ToDouble(a.valor);
+                                        double num2 = Convert.ToDouble(b.valor);
+                                        double res = num1 / num2;
+                                        c = new Elemento(res.ToString(), "doble");
+                                    }
+                                    if(this.tipo == "doble")
+                                    {
+                                        double num1 = Convert.ToDouble(a.valor);
+                                        double num2 = Convert.ToDouble(b.valor);
+                                        double res = num1 / num2;
+                                        c = new Elemento(res.ToString(), "doble");
+                                    }
+                                }
+                            }
+                            return c;
                         }
                         break;
                     }
@@ -100,7 +176,30 @@ namespace Lienzo2D.Clases
                         }
                         if (raiz.ChildNodes.Count() == 3) //G ::= G ^ F 
                         {
-                            //PENDIENTE
+                            Elemento a = (Elemento)recorre_expresion(hijos[0]);
+                            Elemento b = (Elemento)recorre_expresion(hijos[2]);
+                            Elemento c = null;
+                            if (hijos[1].ToString().Contains("^"))
+                            {
+                                if (comprobarOperacion(a, b, "^"))
+                                {
+                                    if(this.tipo == "entero")
+                                    {
+                                        int num1 = Convert.ToInt32(a.valor);
+                                        int num2 = Convert.ToInt32(b.valor);
+                                        double res = Math.Pow(num1,num2);
+                                        c = new Elemento(res.ToString(), "entero");
+                                    }
+                                    if(this.tipo == "doble")
+                                    {
+                                        double num1 = Convert.ToDouble(a.valor);
+                                        double num2 = Convert.ToDouble(b.valor);
+                                        double res = Math.Pow(num1, num2);
+                                        c = new Elemento(res.ToString(), "doble");
+                                    }
+                                }
+                            }
+                            return c;
                         }
                         break;
                     }
@@ -109,30 +208,30 @@ namespace Lienzo2D.Clases
                         if (raiz.ChildNodes.Count() == 1)//F::= identificador | entero | dec | verd | fals | caracter  | RESULTADOFUN | cadena
                         {
                             Elemento elemento = null;
-                            if (hijos[0].ToString().Contains("(cade)"))
+                            if (hijos[0].ToString().Contains(" (cade)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(cade)", "");
+                                String valor = hijos[0].ToString().Replace(" (cade)", "");
                                 elemento = new Elemento(valor, "cadena");
                             }
-                            if (hijos[0].ToString().Contains("(ent)"))
+                            if (hijos[0].ToString().Contains(" (ent)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(ent)", "");
+                                String valor = hijos[0].ToString().Replace(" (ent)", "");
                                 elemento = new Elemento(valor, "entero");
                             }
-                            if (hijos[0].ToString().Contains("(deci)"))
+                            if (hijos[0].ToString().Contains(" (deci)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(deci)", "");
+                                String valor = hijos[0].ToString().Replace(" (deci)", "");
                                 elemento = new Elemento(valor, "decimal");
                             }
-                            if (hijos[0].ToString().Contains("(carac)"))
+                            if (hijos[0].ToString().Contains(" (carac)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(carac)", "");
+                                String valor = hijos[0].ToString().Replace(" (carac)", "");
                                 elemento = new Elemento(valor, "caracter");
                             }
-                            if (hijos[0].ToString().Contains("(identificador)"))
+                            if (hijos[0].ToString().Contains(" (identificador)"))
                             {
                                 //DEBO DE BUSCAR EN LAS VARIABLES PARA TRAER EL VALOR QUE ESTE YA TIENE
-                                elemento = buscarValorDeVar(hijos[0].ToString().Replace("(identificador)", ""));
+                                elemento = buscarValorDeVar(hijos[0].ToString().Replace(" (identificador)", ""));
                                 if (elemento != null)
                                 {
                                     return elemento;
@@ -142,19 +241,19 @@ namespace Lienzo2D.Clases
                                     //ERROR DE SEMANTICA... LA VARIABLE NO EXISTE O NO ESTA DECLARADA
                                 }
                             }
-                            if (hijos[0].ToString().Contains("(true)"))
+                            if (hijos[0].ToString().Contains(" (true)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(true)","");
+                                String valor = hijos[0].ToString().Replace(" (true)","");
                                 elemento = new Elemento(valor, "boolean");
                             }
-                            if (hijos[0].ToString().Contains("(true)"))
+                            if (hijos[0].ToString().Contains(" (true)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(true)", "");
+                                String valor = hijos[0].ToString().Replace(" (true)", "");
                                 elemento = new Elemento(valor, "boolean");
                             }
-                            if (hijos[0].ToString().Contains("(false)"))
+                            if (hijos[0].ToString().Contains(" (false)"))
                             {
-                                String valor = hijos[0].ToString().Replace("(false)", "");
+                                String valor = hijos[0].ToString().Replace(" (false)", "");
                                 elemento = new Elemento(valor, "boolean");
                             }
                             return elemento;
@@ -200,6 +299,10 @@ namespace Lienzo2D.Clases
                 case "+":
                     {
                         if(a.tipo == "entero" && b.tipo == "entero")
+                        {
+                            retorno = true;
+                        }
+                        if(a.tipo == "doble" && b.tipo == "doble")
                         {
                             retorno = true;
                         }
