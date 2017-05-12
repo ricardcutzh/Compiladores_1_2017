@@ -30,6 +30,8 @@ namespace Lienzo2D.Clases
 
         List<Funcion> Funciones = new List<Funcion>();//FUNCIONES DEL LIENZO
 
+        List<String> Extends = new List<string>();//EXTENDS DEL LIENZO
+
         String nombre; //Nombre del Lienzo
 
         String visibilidad; //Visibilidad del Lienzo
@@ -43,6 +45,36 @@ namespace Lienzo2D.Clases
         public List<Simbolo> getTable()//OBTENER LA TABLA ACTUAL
         {
             return this.Tabla;
+        }
+
+        public List<Procedimiento> getProcedimientos()//OBTENER LOS PROCEDIMIENTOS ENCONTRADOS
+        {
+            return this.procedimientos;
+        }
+
+        public List<Funcion> getFunciones()//OBTENGO LAS FUNCIONES
+        {
+            return this.Funciones;
+        }
+
+        public List<String> getExtends()//OBTENGO LOS EXTIENDE DEL LIENZO
+        {
+            return this.Extends;
+        }
+
+        public List<Variable> getVariables()
+        {
+            return this.variables;
+        }
+
+        public String getNombre()
+        {
+            return this.nombre;
+        }
+
+        public String getVisibilidad()
+        {
+            return this.visibilidad;
         }
 
         public void generarme_tabla()//METODO PUBLICO PARA ACCEDER AL ARBOL 
@@ -64,18 +96,44 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 5)
                         {
-                            
+
                             string visi = generarTabla(hijos[0]).ToString();
                             visi = visi.Replace(" (Keyword)", "");
+                            this.visibilidad = visi;
                             string tipo = hijos[1].ToString().Replace(" (Keyword)", "");
                             string nombre = hijos[2].ToString().Replace(" (identificador)", "");
+                            this.nombre = nombre;
                             ambitos.Push(nombre);
+                            //EXTIENDES
+                            generarTabla(hijos[3]);
                             Simbolo nuevo = new Simbolo(nombre, tipo, visi, "No Aplica", ambitos.Peek() , false);
                             Tabla.Add(nuevo);
                             //ME MUEVO AL CUERPO DEL LIENZO
                             generarTabla(hijos[4]);
                         }
                         break; 
+                    }
+                case "EXTIENDE":
+                    {
+                        if(raiz.ChildNodes.Count() == 2)
+                        {
+                            generarTabla(hijos[1]);
+                        }
+                        break;
+                    }
+                case "LISTADOEX":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)//::= LISTADOEX com LISTADOEX
+                        {
+                            generarTabla(hijos[0]);
+                            generarTabla(hijos[1]);
+                        }
+                        if(raiz.ChildNodes.Count() == 1)//::= identificador
+                        {
+                            String ext = hijos[0].ToString().Replace(" (identificador)", "");
+                            this.Extends.Add(ext);
+                        }
+                        break;
                     }
                 case "VISIBILIDAD":
                     {
@@ -105,6 +163,10 @@ namespace Lienzo2D.Clases
                             //CAPTURO EL MÉTODO PRINCIPAL
                             string nombre = hijos[0].ToString().Replace(" (Keyword)", "");
                             Simbolo nuevo = new Simbolo(nombre, "Main", "No Aplica", "No Aplica", ambitos.Peek(),false);
+                            Procedimiento principal = new Procedimiento(hijos[1], nombre, null);
+                            //METO PROCEDIMIENTOS NUEVOS
+                            this.procedimientos.Add(principal);
+                            //METO PROCEDMIENTOS NUEVOS
                             ambitos.Push(nombre);
                             Tabla.Add(nuevo);
                             ambitos.Pop();//SALGO DEL AMBITO PRINCIPAL
@@ -181,6 +243,9 @@ namespace Lienzo2D.Clases
                         {
                             String tipo = generarTabla(hijos[0]).ToString();
                             Simbolo simbol = (Simbolo)generarTabla(hijos[1]);
+                            ParseTreeNode []subhijos = hijos[1].ChildNodes.ToArray();
+                            Funcion fun = new Funcion(subhijos[3], simbol.nombre, tipo, this.paraux);
+                            this.Funciones.Add(fun);
                             return simbol;
                         }
                         break;
@@ -201,6 +266,8 @@ namespace Lienzo2D.Clases
                             generarTabla(hijos[1]);
                             Simbolo simbolo = new Simbolo(nombre, tipo, "", "No Aplica", ambitos.Peek(), false);
                             ambitos.Push(nombre);
+
+                            Procedimiento pro = new Procedimiento(hijos[2], nombre, this.paraux);
 
                             //AQUI FALTAN SENTENCIAS!!!
 
@@ -225,6 +292,7 @@ namespace Lienzo2D.Clases
                             }
                             Simbolo simbolo = new Simbolo(nombre, "Funcion","", "No Aplica", ambitos.Peek(), false, esarreglo, dim);
                             ambitos.Push(nombre);
+
                             //SENTENCIAS
                             return simbolo;
                         }
