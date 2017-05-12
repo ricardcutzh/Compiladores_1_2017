@@ -11,6 +11,7 @@ namespace Lienzo2D.Clases
 {
     class Tabla_Simbolos
     {
+
         String tipo_actual_evaluado; //TIPO DE VARIABLE ACTUAL EVALUADA
 
         List<Simbolo> Tabla = new List<Simbolo>(); //TABLA DE SIMBOLOS
@@ -24,6 +25,15 @@ namespace Lienzo2D.Clases
         ParseTreeNode raizAST;//RAÍZ DEL ARBOL CON EL QUE EMPIEZO EL RECORRIDO
 
         List<Variable> variables = new List<Variable>();//LISTA DE TODAS LAS VARIABLES QUE EXISTEN EN EN LIENZO ANALIZADO
+
+        List<Procedimiento> procedimientos = new List<Procedimiento>();//PROCEDIMIENTOS DEL LIENZO
+
+        List<Funcion> Funciones = new List<Funcion>();//FUNCIONES DEL LIENZO
+
+        String nombre; //Nombre del Lienzo
+
+        String visibilidad; //Visibilidad del Lienzo
+
 
         public Tabla_Simbolos(ParseTreeNode raiz)
         {
@@ -213,7 +223,7 @@ namespace Lienzo2D.Clases
                             {
                                 esarreglo = true;
                             }
-                            Simbolo simbolo = new Simbolo(nombre, "Función","", "No Aplica", ambitos.Peek(), false, esarreglo, dim);
+                            Simbolo simbolo = new Simbolo(nombre, "Funcion","", "No Aplica", ambitos.Peek(), false, esarreglo, dim);
                             ambitos.Push(nombre);
                             //SENTENCIAS
                             return simbolo;

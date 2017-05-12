@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Graficacion\ArchivoDot.cs" />
     <Compile Include="Graficacion\Reporte.cs" />
+    <Compile Include="Graficacion\TablaSimbolosHTML.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Editor.resx">

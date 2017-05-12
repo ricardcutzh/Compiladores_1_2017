@@ -318,11 +318,15 @@ namespace Lienzo2D
                         Tabla_Simbolos tabla = new Tabla_Simbolos(Sintactico.raizDeArbol);
                         tabla.generarme_tabla();
                         List<Simbolo> simbolos = tabla.getTable();
-                        
-                        foreach(Simbolo s in simbolos)
+
+                        /*foreach(Simbolo s in simbolos)
                         {
                             MessageBox.Show("Simbolo: " + s.nombre + " Tipo: " + s.tipo + " Visibilidad: " + s.visibilidad + " Ambito: " + s.ambito + " Valor: " + s.valor);
-                        }
+                        }*/
+
+                        TablaSimbolosHTML reporte = new TablaSimbolosHTML(simbolos);
+                        reporte.generarTablaHTML();
+                        
                     }
                     
                 }
