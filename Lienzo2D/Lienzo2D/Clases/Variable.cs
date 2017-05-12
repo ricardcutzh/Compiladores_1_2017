@@ -14,9 +14,9 @@ namespace Lienzo2D.Clases
         public string ambito { get; }
         public bool conservar { get; }
         public bool esGlobal { get; }
-        public List<int> dimensiones;
+        public List<int> dimensiones = new List<int>();
         public bool esArreglo;
-        List<List<int>> Valores = new List<List<int>>();
+        public List<List<int>> Valores = new List<List<int>>();
 
         public Variable(string nombre, string valor, string tipo, string ambito, bool conservar, bool esGlobal)
         {

@@ -105,10 +105,16 @@ namespace Lienzo2D.Clases
                                             c = new Elemento("false", "boolean");
                                         }
                                      }
+                                     if(this.tipo == "cadena")
+                                    {
+                                        string a1 = a.valor;
+                                        string b1 = b.valor;
+                                        c = new Elemento(a1 + b1, "cadena");
+                                    }
                                 }
                                 else //SI LA OPERACION ENTRE A Y B NO SE PUEDE REALIZAR ES UN ERROR SEMANTICO:
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operación de Suma entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semántico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operacion de Suma entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                 }
                             }
@@ -133,7 +139,7 @@ namespace Lienzo2D.Clases
                                 }
                                 else //SI NO SE PUEDE REALIZAR ES ERROR SEMANTICO
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operación de Resta entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semántico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operacion de Resta entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                 }
                             }
@@ -190,7 +196,7 @@ namespace Lienzo2D.Clases
                                 }
                                 else //ERROR SEMANTICO
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operación de Multiplicación entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semántico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operacion de Multiplicacion entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                 }
                             }
@@ -215,7 +221,7 @@ namespace Lienzo2D.Clases
                                 }
                                 else//error de semantica
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operación de División entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semántico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operacion de Division entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                 }
                             }
@@ -259,7 +265,7 @@ namespace Lienzo2D.Clases
                                 }
                                 else//error de semantica
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operación de Potencia entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semántico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Operacion de Potencia entre tipos " + a.tipo + " y " + b.tipo + " no es posible", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                 }
                             }
@@ -285,7 +291,7 @@ namespace Lienzo2D.Clases
                             if (hijos[0].ToString().Contains(" (deci)"))
                             {
                                 String valor = hijos[0].ToString().Replace(" (deci)", "");
-                                elemento = new Elemento(valor, "decimal");
+                                elemento = new Elemento(valor, "doble");
                             }
                             if (hijos[0].ToString().Contains(" (carac)"))
                             {
@@ -302,7 +308,7 @@ namespace Lienzo2D.Clases
                                 }
                                 else
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Variable: " + hijos[0].ToString().Replace(" (identificador)", "") + " No declarada o No disponible en este ámbito", "Error Semántico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Variable: '" + hijos[0].ToString().Replace(" (identificador)", "") + "' No declarada o No disponible en este Ambito: "+this.ambito, "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
                                     this.SemanticosExpr.Add(error);
                                     //ERROR DE SEMANTICA... LA VARIABLE NO EXISTE O NO ESTA DECLARADA
                                 }

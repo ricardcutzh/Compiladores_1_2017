@@ -319,20 +319,34 @@ namespace Lienzo2D
                         tabla.generarme_tabla();
                         List<Simbolo> simbolos = tabla.getTable();
 
-                        /*foreach(Simbolo s in simbolos)
-                        {
-                            MessageBox.Show("Simbolo: " + s.nombre + " Tipo: " + s.tipo + " Visibilidad: " + s.visibilidad + " Ambito: " + s.ambito + " Valor: " + s.valor);
-                        }*/
-
                         TablaSimbolosHTML reporte = new TablaSimbolosHTML(simbolos);
                         reporte.generarTablaHTML();
 
                         Lienzo l = new Lienzo(tabla.getProcedimientos(), tabla.getFunciones(), tabla.getVariables(), tabla.getExtends(), tabla.getNombre(), tabla.getVisibilidad());
-                        l.ReporteDeLienzo();
-
-                        l.ReporteDeFunciones();
-
-                        l.ReporteDeProcedimientos();
+                        
+                        /*foreach(Variable c in tabla.getVariables())
+                        {
+                            if (c.esArreglo)
+                            {
+                                String cadena = "Nombre: " + c.nombre + " | Dimensiones: " + c.dimensiones.Count() + "\n";
+                                foreach(List<int> lis in c.Valores)
+                                {
+                                    cadena = cadena + "inicio demen\n";
+                                    foreach(int x in lis)
+                                    {
+                                        cadena = cadena + "Valor: " + x+"\n";
+                                    }
+                                    cadena = cadena + "fin dimen\n";
+                                }
+                                MessageBox.Show(cadena);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nombre: " + c.nombre + " | Valor: " + c.valor);
+                            }
+                        }*/
+                        Reporte re = new Reporte();
+                        re.ReporteDeErrores(tabla.semanticos(), "Errores");
                     }
                     
                 }
@@ -428,6 +442,11 @@ namespace Lienzo2D
                     
                 }
             }
+        }
+
+        private void toolStripButton8_Click(object sender, EventArgs e)//MUESTRA LA TABLA DE SIMBOLOS
+        {
+            Process.Start("C:\\Reportes\\TablaDeSimbolos.html");
         }
     }
 }

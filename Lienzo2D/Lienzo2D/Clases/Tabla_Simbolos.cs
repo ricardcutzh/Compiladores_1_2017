@@ -12,6 +12,9 @@ namespace Lienzo2D.Clases
     class Tabla_Simbolos
     {
         #region Lienzo
+
+        List<ErrorEnAnalisis> erroresSemanticos = new List<ErrorEnAnalisis>();//ERRORES SEMANTICOS ENCONTRADOS
+
         String tipo_actual_evaluado; //TIPO DE VARIABLE ACTUAL EVALUADA
 
         List<Simbolo> Tabla = new List<Simbolo>(); //TABLA DE SIMBOLOS
@@ -52,6 +55,13 @@ namespace Lienzo2D.Clases
             this.raizAST = raiz;
         }
 
+        #region gets   
+
+        public List<ErrorEnAnalisis> semanticos()
+        {
+            return this.erroresSemanticos;
+        }
+
         public List<Simbolo> getTable()//OBTENER LA TABLA ACTUAL
         {
             return this.Tabla;
@@ -86,6 +96,8 @@ namespace Lienzo2D.Clases
         {
             return this.visibilidad;
         }
+
+        #endregion
 
         public void generarme_tabla()//METODO PUBLICO PARA ACCEDER AL ARBOL 
         {
@@ -149,7 +161,7 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)
                         {
-                            return hijos[0].ToString();
+                            return hijos[0].ToString().Replace(" (Keyword)","");
                         }
                         else
                         {
@@ -179,6 +191,7 @@ namespace Lienzo2D.Clases
                             //METO PROCEDMIENTOS NUEVOS
                             ambitos.Push(nombre);
                             Tabla.Add(nuevo);
+                            generarTabla(hijos[1]);
                             ambitos.Pop();//SALGO DEL AMBITO PRINCIPAL
                         }
                         break;
@@ -238,16 +251,27 @@ namespace Lienzo2D.Clases
                                 c.visibilidad = visibi;
                                 c.conservar = conservar;
                                 c.tipo = tipo;
-                                c.ambito = ambitos.Peek().ToString();
-                                Tabla.Add(c);
+                                c.ambito = ambitos.Peek().ToString();                     
                                 if(c.esArreglo == true)
                                 {
+                                    c.valor = "Varios";
+                                    c.dimensiones = this.DimensAux.Count();
                                     List<List<int>> nueva = new List<List<int>>();
                                     foreach(List<int> l in this.ValoresAux)
                                     {
                                         nueva.Add(l);
                                     }
+                                    if (this.DimensAux.Count() > 1)
+                                    {
+                                        nueva.RemoveAt(0);
+                                    }
+                                    this.ValoresAux.Clear();
                                     Variable vari = new Variable(c.nombre, nueva, c.tipo, c.ambito, c.conservar, false, true);
+                                    foreach(int v in this.DimensAux)
+                                    {
+                                        vari.dimensiones.Add(v);
+                                    }
+                                    this.DimensAux.Clear();
                                     variables.Add(vari);
                                 }
                                 else
@@ -255,6 +279,7 @@ namespace Lienzo2D.Clases
                                     Variable va = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, false);
                                     variables.Add(va);
                                 }
+                                Tabla.Add(c);
                                 //AQUI EVALUARÉ SI ES UN ARREGLO PARA PROCEDER
                             }
                             auxiliar.Clear();
@@ -343,7 +368,9 @@ namespace Lienzo2D.Clases
                             ambitos.Push(nombre);
 
                             //SENTENCIAS
+                            generarTabla(hijos[3]);
                             return simbolo;
+                            
                         }
                         break;
                     }
@@ -403,7 +430,13 @@ namespace Lienzo2D.Clases
                             else
                             {
                                 //ERRORES SEMANTICOS
+                                List<ErrorEnAnalisis> aux = exp.getErroresSemanticos();
+                                foreach(ErrorEnAnalisis er in aux)
+                                {
+                                    this.erroresSemanticos.Add(er);
+                                }
                             }
+                            generarTabla(hijos[3]);
                         }
                         if(raiz.ChildNodes.Count() == 3)//::= opb EXPR clb
                         {
@@ -416,6 +449,11 @@ namespace Lienzo2D.Clases
                             else
                             {
                                 //errores semanticos encontrados
+                                List<ErrorEnAnalisis> aux = exp.getErroresSemanticos();
+                                foreach (ErrorEnAnalisis er in aux)
+                                {
+                                    this.erroresSemanticos.Add(er);
+                                }
                             }
                         }
                         break;
@@ -455,7 +493,20 @@ namespace Lienzo2D.Clases
                                     v.Add(x);
                                 }
                                 this.ValoresAux.Add(v);
+                                subValores.Clear();
                             }
+                            //OJO AQUI EDITE
+                            else
+                            {
+                                List<int> z = new List<int>();
+                                foreach(int x in this.subValores)
+                                {
+                                    z.Add(x);
+                                }
+                                this.ValoresAux.Add(z);
+                            }
+                            //FIN EDICION
+                            subValores.Clear();
                         }
                         break;
                     }
@@ -475,8 +526,10 @@ namespace Lienzo2D.Clases
                                 {
                                     nueva.Add(x);
                                 }
-                                this.subValores.Clear();
+                                
                                 this.ValoresAux.Add(nueva);//METO LA LISTA DE SUBVALORES A LA LISTA DE LISTAS
+                                this.subValores.Clear();
+                                generarTabla(hijos[1]);
                             }
                         }
                         if (raiz.ChildNodes.Count() == 1)//::EXPR
@@ -490,6 +543,11 @@ namespace Lienzo2D.Clases
                             else
                             {
                                 //ERRORES SEMANTICOS
+                                List<ErrorEnAnalisis> aux = ex.getErroresSemanticos();
+                                foreach (ErrorEnAnalisis er in aux)
+                                {
+                                    this.erroresSemanticos.Add(er);
+                                }
                             }
                         }
                         break;
@@ -538,7 +596,12 @@ namespace Lienzo2D.Clases
                                 List<ErrorEnAnalisis> errores = expr.getErroresSemanticos();
                                 foreach(ErrorEnAnalisis er in errores)
                                 {
-                                    MessageBox.Show(er.getError() + " | Linea: " + er.getLinea() + " | Columna: " + er.getColumna());
+                                    //MessageBox.Show(er.getError() + " | Linea: " + er.getLinea() + " | Columna: " + er.getColumna());
+                                    List<ErrorEnAnalisis> aux1 = expr.getErroresSemanticos();
+                                    foreach (ErrorEnAnalisis err in aux1)
+                                    {
+                                        this.erroresSemanticos.Add(err);
+                                    }
                                 }
                             }
                         }
