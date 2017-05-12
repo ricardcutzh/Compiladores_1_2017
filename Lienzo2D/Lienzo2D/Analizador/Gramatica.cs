@@ -128,7 +128,7 @@ namespace Lienzo2D.Analizador
             PARAMETROS = new NonTerminal("PARAMETROS"),
             FUNCIONES = new NonTerminal("FUNCIONES"),
             RETORNAR = new NonTerminal("RETORNAR"),
-            VARLOCALES = new NonTerminal("VARLOCARES"),
+            VARLOCALES = new NonTerminal("VARLOCALES"),
             ASIGNAVAR = new NonTerminal("ASIGNAVAR"),
             DIMOPCIONAL = new NonTerminal("DIMOPCIONAL"),
             SENTENCIAS = new NonTerminal("SENTENCIAS"),

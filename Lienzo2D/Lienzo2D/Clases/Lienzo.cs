@@ -11,12 +11,12 @@ namespace Lienzo2D.Clases
     class Lienzo
     {
         //ESTE OBJETO SERA EL QUE ME AYUDARÁ A EJECUTAR EL CÓDIGO
-        List<Procedimiento> Procedimientos = new List<Procedimiento>();
-        List<Funcion> Funciones = new List<Funcion>();
-        List<Variable> Variables = new List<Variable>();
-        List<String> Extends = new List<String>();
-        String nombre;
-        String visibilidad;
+        public List<Procedimiento> Procedimientos = new List<Procedimiento>();
+        public List<Funcion> Funciones = new List<Funcion>();
+        public List<Variable> Variables = new List<Variable>();
+        public List<String> Extends = new List<String>();
+        public String nombre;
+        public String visibilidad;
 
         public Lienzo(List<Procedimiento> Procedimientos, List<Funcion> Funciones, List<Variable> Variables, List<String> Extends, String nombre, String visibilidad)
         {
@@ -37,6 +37,30 @@ namespace Lienzo2D.Clases
             rep = rep + "Numero de Variables: " + Variables.Count() + "\n";
             rep = rep + "Numero de Extends: " + Extends.Count() + "\n";
             MessageBox.Show(rep);
+        }
+
+        public void ReporteDeFunciones()
+        {
+            string cadena = "Reporte de Funciones: \n";
+            foreach(Funcion f in this.Funciones)
+            {
+                cadena = cadena + "Nombre: " + f.Nombre+"\n";
+                cadena = cadena + "Tipo: " + f.Tipo + "\n";
+                cadena = cadena + "# De Parametros: " + f.Parametros.Count() + "\n";
+            }
+
+            MessageBox.Show(cadena);
+        }
+
+        public void ReporteDeProcedimientos()
+        {
+            string cadena = "Reporte de Procedimientos: \n";
+            foreach (Procedimiento p in this.Procedimientos)
+            {
+                cadena = cadena + "Nombre: " + p.Nombre + " \n";
+                cadena = cadena + "# De Parametros: " + p.parametros.Count() + " \n";
+            }
+            MessageBox.Show(cadena);
         }
     }
 }

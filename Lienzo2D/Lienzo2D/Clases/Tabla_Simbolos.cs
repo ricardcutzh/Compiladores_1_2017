@@ -11,16 +11,12 @@ namespace Lienzo2D.Clases
 {
     class Tabla_Simbolos
     {
-
+        #region Lienzo
         String tipo_actual_evaluado; //TIPO DE VARIABLE ACTUAL EVALUADA
 
         List<Simbolo> Tabla = new List<Simbolo>(); //TABLA DE SIMBOLOS
 
         Stack<String> ambitos = new Stack<string>();//PILA DE AMBITOS
-
-        List<Simbolo> auxiliar = new List<Simbolo>(); //LISTA AUXILIAR PARA ALMACENAR SIMBOLOS TEMPORALMENTE
-
-        List<Parametro> paraux = new List<Parametro>();//LISTA AUXILIAR DE PARAMETROS
 
         ParseTreeNode raizAST;//RAÍZ DEL ARBOL CON EL QUE EMPIEZO EL RECORRIDO
 
@@ -35,7 +31,21 @@ namespace Lienzo2D.Clases
         String nombre; //Nombre del Lienzo
 
         String visibilidad; //Visibilidad del Lienzo
+        #endregion
 
+        #region Auxs
+
+        List<Simbolo> auxiliar = new List<Simbolo>(); //LISTA AUXILIAR PARA ALMACENAR SIMBOLOS TEMPORALMENTE
+
+        List<Parametro> paraux = new List<Parametro>();//LISTA AUXILIAR DE PARAMETROS
+
+        List<int> DimensAux = new List<int>();//LISTA AUXILIARES DE DIMENSIONES
+
+        List<List<int>> ValoresAux = new List<List<int>>();//LISTADO AUXILIAR DE VALORES EN DIMENEIONES
+
+        List<int> subValores = new List<int>();
+
+        #endregion
 
         public Tabla_Simbolos(ParseTreeNode raiz)
         {
@@ -163,7 +173,7 @@ namespace Lienzo2D.Clases
                             //CAPTURO EL MÉTODO PRINCIPAL
                             string nombre = hijos[0].ToString().Replace(" (Keyword)", "");
                             Simbolo nuevo = new Simbolo(nombre, "Main", "No Aplica", "No Aplica", ambitos.Peek(),false);
-                            Procedimiento principal = new Procedimiento(hijos[1], nombre, null);
+                            Procedimiento principal = new Procedimiento(hijos[1], nombre, this.paraux);
                             //METO PROCEDIMIENTOS NUEVOS
                             this.procedimientos.Add(principal);
                             //METO PROCEDMIENTOS NUEVOS
@@ -214,6 +224,44 @@ namespace Lienzo2D.Clases
                         }
                         break;
                     }
+                case "VARLOCALES":
+                    {   if(raiz.ChildNodes.Count() == 4)
+                        {
+                            String visibi = "No Aplica";
+                            bool conservar = seConserva(generarTabla(hijos[0]).ToString());
+                            String tipo = generarTabla(hijos[2]).ToString();
+                            this.tipo_actual_evaluado = tipo;
+                            //AQUI ME DIRIJO A TIPO ASIGNACIÓN:
+                            generarTabla(hijos[3]);
+                            foreach(Simbolo c in auxiliar)
+                            {
+                                c.visibilidad = visibi;
+                                c.conservar = conservar;
+                                c.tipo = tipo;
+                                c.ambito = ambitos.Peek().ToString();
+                                Tabla.Add(c);
+                                if(c.esArreglo == true)
+                                {
+                                    List<List<int>> nueva = new List<List<int>>();
+                                    foreach(List<int> l in this.ValoresAux)
+                                    {
+                                        nueva.Add(l);
+                                    }
+                                    Variable vari = new Variable(c.nombre, nueva, c.tipo, c.ambito, c.conservar, false, true);
+                                    variables.Add(vari);
+                                }
+                                else
+                                {
+                                    Variable va = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, false);
+                                    variables.Add(va);
+                                }
+                                //AQUI EVALUARÉ SI ES UN ARREGLO PARA PROCEDER
+                            }
+                            auxiliar.Clear();
+                            tipo_actual_evaluado = null;
+                        }
+                        break;
+                    }
                 case "PRO_FUNC":
                     {
                         if (raiz.ChildNodes.Count() == 3) //PRO_FUNC ::= CONSERVAR VISIBILIDAD + PRO_FUNCP
@@ -244,7 +292,8 @@ namespace Lienzo2D.Clases
                             String tipo = generarTabla(hijos[0]).ToString();
                             Simbolo simbol = (Simbolo)generarTabla(hijos[1]);
                             ParseTreeNode []subhijos = hijos[1].ChildNodes.ToArray();
-                            Funcion fun = new Funcion(subhijos[3], simbol.nombre, tipo, this.paraux);
+                            List<Parametro> parameters = new List<Parametro>();
+                            Funcion fun = new Funcion(subhijos[3], simbol.nombre, tipo, addParametersToList(parameters));
                             this.Funciones.Add(fun);
                             return simbol;
                         }
@@ -266,11 +315,11 @@ namespace Lienzo2D.Clases
                             generarTabla(hijos[1]);
                             Simbolo simbolo = new Simbolo(nombre, tipo, "", "No Aplica", ambitos.Peek(), false);
                             ambitos.Push(nombre);
-
-                            Procedimiento pro = new Procedimiento(hijos[2], nombre, this.paraux);
-
+                            List<Parametro> parameters = new List<Parametro>();
+                            Procedimiento pro = new Procedimiento(hijos[2], nombre, addParametersToList(parameters));
+                            procedimientos.Add(pro);
                             //AQUI FALTAN SENTENCIAS!!!
-
+                            generarTabla(hijos[2]);
                             return simbolo;
 
                         }
@@ -341,6 +390,36 @@ namespace Lienzo2D.Clases
                         }
                         //break;
                     }
+                case "DIMENSIONES":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)//::= opb EXPR clb  DIMENSIONES
+                        {
+                            Expresion exp = new Expresion("entero", this.variables, this.ambitos.Peek());
+                            Elemento ele = (Elemento)exp.recorre_expresion(hijos[1]);
+                            if(ele != null)
+                            {
+                                this.DimensAux.Add(Convert.ToInt32(ele.valor));
+                            }
+                            else
+                            {
+                                //ERRORES SEMANTICOS
+                            }
+                        }
+                        if(raiz.ChildNodes.Count() == 3)//::= opb EXPR clb
+                        {
+                            Expresion exp = new Expresion("entero", this.variables, this.ambitos.Peek());
+                            Elemento ele = (Elemento)exp.recorre_expresion(hijos[1]);
+                            if(ele != null)
+                            {
+                                this.DimensAux.Add(Convert.ToInt32(ele.valor));
+                            }
+                            else
+                            {
+                                //errores semanticos encontrados
+                            }
+                        }
+                        break;
+                    }
                 case "TIPO":
                     {
                         string tipo = hijos[0].ToString().Replace(" (Keyword)","");
@@ -353,6 +432,81 @@ namespace Lienzo2D.Clases
                         {
                             //ME MUEVO A ASIGNACIÓN
                             generarTabla(hijos[0]);
+                        }
+                        if(raiz.ChildNodes.Count() == 4)//::= arreglo ASIGNACIONARR DIMENSIONES LLENADOARR
+                        {
+                            //ME MUEVO A ASIGNACIÓN DE ARREGLO
+                            generarTabla(hijos[1]);//OBTENGO SIMBOLOS AUXILIARES
+                            generarTabla(hijos[2]);//OBTENGO LAS DIMENSIONES DEL ARREGLO
+                            generarTabla(hijos[3]);//LLENADO DEL ARREGLO CON SUS VALORES
+                        }
+                        break;
+                    }
+                case "LLENADOARR":
+                    {
+                        if (raiz.ChildNodes.Count() == 3)//::= opl LISTADOARR cll
+                        {
+                            generarTabla(hijos[1]);
+                            if (this.ValoresAux.Count() == 0)
+                            {
+                                List<int> v = new List<int>();
+                                foreach(int x in this.subValores)
+                                {
+                                    v.Add(x);
+                                }
+                                this.ValoresAux.Add(v);
+                            }
+                        }
+                        break;
+                    }
+                case "LISTADOARR":
+                    {
+                        if (raiz.ChildNodes.Count() == 3)
+                        {
+                            if (hijos[1].ToString().Contains(","))//::= LISTADOARR com LISTADOARR
+                            {
+                                generarTabla(hijos[0]);
+                                generarTabla(hijos[2]);
+                            }
+                            else//::= opl LISTADOARR cll
+                            {
+                                List<int> nueva = new List<int>();//CREO UNA NUEVA LISTA
+                                foreach(int x in this.subValores)//RECORRO LOS SUBVALORES Y LOS METO A LA NUEVA
+                                {
+                                    nueva.Add(x);
+                                }
+                                this.subValores.Clear();
+                                this.ValoresAux.Add(nueva);//METO LA LISTA DE SUBVALORES A LA LISTA DE LISTAS
+                            }
+                        }
+                        if (raiz.ChildNodes.Count() == 1)//::EXPR
+                        {
+                            Expresion ex = new Expresion("entero", this.variables, this.ambitos.Peek());
+                            Elemento el = (Elemento)ex.recorre_expresion(hijos[0]);
+                            if (el != null)
+                            {
+                                this.subValores.Add(Convert.ToInt32(el.valor));
+                            }
+                            else
+                            {
+                                //ERRORES SEMANTICOS
+                            }
+                        }
+                        break;
+                    }
+                case "ASIGNACIONARR":
+                    {
+                        if (raiz.ChildNodes.Count() == 3)//::= ASIGNACIONARR com ASIGNACIONARR
+                        {
+
+                            generarTabla(hijos[0]);
+                            generarTabla(hijos[2]);
+                        }
+                        if(raiz.ChildNodes.Count() == 1)
+                        {
+                            string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                            Simbolo sim = new Simbolo(nombre, "", "", "", this.ambitos.Peek(), false, true, 0);
+                            this.auxiliar.Add(sim);
                         }
                         break;
                     }
@@ -394,6 +548,18 @@ namespace Lienzo2D.Clases
                             generarTabla(hijos[2]);//ASIGNACIÓN RECURSIVA
                         }
                         break;
+                    }
+                case "SENTENCIAS":
+                    {
+                        if(raiz.ChildNodes.Count() == 2)
+                        {
+                            if (hijos[0].ToString().Contains("VARLOCALES"))
+                            {
+                                generarTabla(hijos[0]);
+                                generarTabla(hijos[1]);
+                            }
+                        }
+                        break;
                     } 
             }
             return "";
@@ -412,6 +578,14 @@ namespace Lienzo2D.Clases
             }
         }
         
+        private List<Parametro> addParametersToList(List<Parametro> parameter)
+        {
+            foreach(Parametro p in this.paraux)
+            {
+                parameter.Add(p);
+            }
+            return parameter;
+        }
 
     }
 }

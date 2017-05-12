@@ -11,10 +11,10 @@ namespace Lienzo2D.Clases
 {
     class Funcion
     {
-        String Nombre;
-        String Tipo;
+        public String Nombre;
+        public String Tipo;
         ParseTreeNode Sentencias;
-        List<Parametro> Parametros = new List<Parametro>();
+        public List<Parametro> Parametros = new List<Parametro>();
 
         public Funcion(ParseTreeNode Sentencias, string Nombre, string Tipo, List<Parametro> Parametros)
         {

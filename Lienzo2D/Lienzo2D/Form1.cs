@@ -326,7 +326,13 @@ namespace Lienzo2D
 
                         TablaSimbolosHTML reporte = new TablaSimbolosHTML(simbolos);
                         reporte.generarTablaHTML();
-                        
+
+                        Lienzo l = new Lienzo(tabla.getProcedimientos(), tabla.getFunciones(), tabla.getVariables(), tabla.getExtends(), tabla.getNombre(), tabla.getVisibilidad());
+                        l.ReporteDeLienzo();
+
+                        l.ReporteDeFunciones();
+
+                        l.ReporteDeProcedimientos();
                     }
                     
                 }
