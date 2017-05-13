@@ -323,28 +323,7 @@ namespace Lienzo2D
                         reporte.generarTablaHTML();
 
                         Lienzo l = new Lienzo(tabla.getProcedimientos(), tabla.getFunciones(), tabla.getVariables(), tabla.getExtends(), tabla.getNombre(), tabla.getVisibilidad());
-                        
-                        /*foreach(Variable c in tabla.getVariables())
-                        {
-                            if (c.esArreglo)
-                            {
-                                String cadena = "Nombre: " + c.nombre + " | Dimensiones: " + c.dimensiones.Count() + "\n";
-                                foreach(List<int> lis in c.Valores)
-                                {
-                                    cadena = cadena + "inicio demen\n";
-                                    foreach(int x in lis)
-                                    {
-                                        cadena = cadena + "Valor: " + x+"\n";
-                                    }
-                                    cadena = cadena + "fin dimen\n";
-                                }
-                                MessageBox.Show(cadena);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Nombre: " + c.nombre + " | Valor: " + c.valor);
-                            }
-                        }*/
+                       
                         Reporte re = new Reporte();
                         re.ReporteDeErrores(tabla.semanticos(), "Errores");
                     }

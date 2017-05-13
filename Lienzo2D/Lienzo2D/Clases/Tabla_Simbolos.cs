@@ -228,7 +228,14 @@ namespace Lienzo2D.Clases
                                 Tabla.Add(c);
                                 //VARIABLES:
                                 Variable var = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, true);
-                                variables.Add(var);                        
+                                if(VariableExisteEnAmbito(var.nombre, var.ambito))
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Ya existe una variable: ' " + var.nombre + " ' Declarada en ambito: ' "+ambitos.Peek()+" '", "Error Semantico",1,1);
+                                }
+                                else
+                                {
+                                    variables.Add(var);
+                                }                                                      
                             }
                             //LIBERO LA LISTA
                             auxiliar.Clear();
@@ -409,7 +416,7 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)
                         {
-                            return hijos[0].ToString();
+                            return hijos[0].ToString().Replace(" (Keyword)","");
                         }
                         else
                         {
@@ -621,14 +628,56 @@ namespace Lienzo2D.Clases
                                 generarTabla(hijos[0]);
                                 generarTabla(hijos[1]);
                             }
+                            else//CUALQUIER OTRA PRODUCCIÓN QUE VENGA SE IRA A SENTENCIAS PARA BUSCAR MÁS ASIGNACIONES
+                            {
+                                generarTabla(hijos[0]);
+                                generarTabla(hijos[1]);
+                            }
                         }
                         break;
-                    } 
+                    }
+                case "SENTENCIA_SI":
+                    {
+                        generarTabla(hijos[2]);//SOLO DE PASO
+                        break;
+                    }
+                case "SENTENCIA_MIENTRAS":
+                    {
+                        generarTabla(hijos[2]);//SOLO DE PASO
+                        break;
+                    }
+                case "SENTENCIA_PARA":
+                    {
+                        generarTabla(hijos[4]);//SOLO DE PASO
+                        break;
+                    }
+                case "SENTENCIA_HACER":
+                    {
+                        generarTabla(hijos[1]);//SOLO DE PASO
+                        break;
+                    }
+                case "SENTENCIASP":
+                    {
+                        if(raiz.ChildNodes.Count == 2)
+                        {
+                            if (hijos[0].ToString().Contains("VARLOCALES"))
+                            {
+                                generarTabla(hijos[0]);
+                                generarTabla(hijos[1]);
+                            }
+                            else
+                            {
+                                generarTabla(hijos[0]);
+                                generarTabla(hijos[1]);
+                            }
+                        }
+                        break;
+                    }
             }
             return "";
         }
 
-
+        #region Metodos y Funciones Auxiliares
         private bool seConserva(string cadena)
         {
             if(cadena == "Conservar")
@@ -649,6 +698,38 @@ namespace Lienzo2D.Clases
             }
             return parameter;
         }
+
+        private bool ArregloExiste(string nombre, string ambito)
+        {
+            foreach(Variable c in this.variables)
+            {
+                if (c.esArreglo)
+                {
+                    if(c.nombre == nombre && c.ambito == ambito)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool VariableExisteEnAmbito(string nombre, string ambito)
+        {
+            foreach(Variable c in this.variables)
+            {
+                if (!c.esArreglo)
+                {
+                    if(c.nombre == nombre && c.ambito == ambito)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        #endregion
 
     }
 }

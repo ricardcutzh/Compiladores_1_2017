@@ -12,6 +12,7 @@ namespace Lienzo2D.Clases
 {
     class Expresion//CLASE PARA LA EVALUACIÓN DE EXPRESIONES (HACE VALIDACIÓNES SEMÁNTICAS)
     {
+        #region Globales
         string tipo;//TIPO DE LA EXPRESIÓN QUE SE ESTÁ VALUANDO
         List<Variable> vars;//LISTADO DE VARIABLES ACTUALES ANALIZADAS
         string ambito; //ambito el que me encuentro
@@ -19,6 +20,15 @@ namespace Lienzo2D.Clases
         //LISTA DE ERRORES SEMANTICOS ENCONTRADOS EN EXPRESIONES:
         List<ErrorEnAnalisis> SemanticosExpr = new List<ErrorEnAnalisis>();
 
+        //LISTA PARA OBTENER LOS INDICES QUE ME AYUDARÁN A OBTENER LA INFORMACIÓN DEL ARREGLO
+        List<int> indices = new List<int>();
+
+        //POSICION DE EXPRESION
+        int line;
+        int colum;
+        #endregion
+
+        #region Constructores
         public Expresion(String tipo)//PARA EL CONSTRUCTOR LE ENVÍO UN TÍPO
         {
             //constructor por defecto
@@ -31,12 +41,16 @@ namespace Lienzo2D.Clases
             this.vars = vars;
             this.ambito = ambito;
         }
+        #endregion
 
+        #region Gets
         public List<ErrorEnAnalisis> getErroresSemanticos()
         {
             return this.SemanticosExpr;//LISTA DE ERRORES SEMANTICOS ENCONTRADOS EN EXPRESIONES
         }
+        #endregion
 
+        #region Analisis de Expresion
         public object recorre_expresion(ParseTreeNode raiz)
         {
             string Inicio = raiz.ToString();
@@ -52,9 +66,18 @@ namespace Lienzo2D.Clases
                         if(raiz.ChildNodes.Count() == 1)//EXPR ::= E 
                         {
                             Elemento elemento = (Elemento)recorre_expresion(hijos[0]);
+                            if (elemento != null)
+                            {
+                                if(elemento.tipo != this.tipo)
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("No se puede asignar valor de tipo: " + elemento.tipo + " a una variable de tipo: " + this.tipo, "Error Semantico", this.line, this.colum);
+                                    this.SemanticosExpr.Add(error);
+                                    return null;
+                                }
+                            }
+                            return elemento;
                             //MessageBox.Show(valor);
                             //DEBERÍA DE RETORNAR UN ELEMENTO PARA COMPROBAR SEMANTICAMENTE LOS TIPOS
-                            return elemento;
                         }
                         break;
                     }
@@ -277,28 +300,30 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//F::= identificador | entero | dec | verd | fals | caracter  | RESULTADOFUN | cadena
                         {
+                            this.line = hijos[0].Token.Location.Line;
+                            this.colum = hijos[0].Token.Location.Column;
                             Elemento elemento = null;
-                            if (hijos[0].ToString().Contains(" (cade)"))
+                            if (hijos[0].ToString().Contains(" (cade)"))//::=cadena
                             {
                                 String valor = hijos[0].ToString().Replace(" (cade)", "");
                                 elemento = new Elemento(valor, "cadena");
                             }
-                            if (hijos[0].ToString().Contains(" (ent)"))
+                            if (hijos[0].ToString().Contains(" (ent)"))//::=entero
                             {
                                 String valor = hijos[0].ToString().Replace(" (ent)", "");
                                 elemento = new Elemento(valor, "entero");
                             }
-                            if (hijos[0].ToString().Contains(" (deci)"))
+                            if (hijos[0].ToString().Contains(" (deci)"))//::=decimal (doble)
                             {
                                 String valor = hijos[0].ToString().Replace(" (deci)", "");
                                 elemento = new Elemento(valor, "doble");
                             }
-                            if (hijos[0].ToString().Contains(" (carac)"))
+                            if (hijos[0].ToString().Contains(" (carac)"))//::=caracter
                             {
                                 String valor = hijos[0].ToString().Replace(" (carac)", "");
                                 elemento = new Elemento(valor, "caracter");
                             }
-                            if (hijos[0].ToString().Contains(" (identificador)"))
+                            if (hijos[0].ToString().Contains(" (identificador)"))//::=identificador
                             {
                                 //DEBO DE BUSCAR EN LAS VARIABLES PARA TRAER EL VALOR QUE ESTE YA TIENE
                                 elemento = buscarValorDeVar(hijos[0].ToString().Replace(" (identificador)", ""));
@@ -313,28 +338,62 @@ namespace Lienzo2D.Clases
                                     //ERROR DE SEMANTICA... LA VARIABLE NO EXISTE O NO ESTA DECLARADA
                                 }
                             }
-                            if (hijos[0].ToString().Contains("true"))
+                            if (hijos[0].ToString().Contains("true"))//::= true
                             {
                                 //String valor = hijos[0].ToString().Replace(" (true)","");
                                 elemento = new Elemento("true", "boolean");
                             }
-                            if (hijos[0].ToString().Contains("false"))
+                            if (hijos[0].ToString().Contains("false"))//::= false
                             {
                                 //String valor = hijos[0].ToString().Replace(" (false)", "");
                                 elemento = new Elemento("false", "boolean");
                             }
-                            if (hijos[0].ToString().Contains("E"))
+                            if (hijos[0].ToString().Contains("E"))//::= (E)
                             {
                                 return recorre_expresion(hijos[0]);
                             }
                             return elemento;
+                        }
+                        if(raiz.ChildNodes.Count() == 2)//identificador DIMENSIONES
+                        {
+                            this.line = hijos[0].Token.Location.Line;
+                            this.colum = hijos[0].Token.Location.Line;
+                            Elemento elemento = null;
+                            string nombreArreglo = hijos[0].ToString().Replace(" (identificadro)","");
+                            recorre_expresion(hijos[1]);
+                            elemento = buscarValorDeArray(nombreArreglo, this.indices);
+                            indices.Clear();
+                            return elemento;
+                        }
+                        break;
+                    }
+                case "DIMENSIONES":
+                    {
+                        if(raiz.ChildNodes.Count() == 4)
+                        {
+                            Elemento el = (Elemento)recorre_expresion(hijos[1]);
+                            if(el != null)
+                            {
+                                this.indices.Add(Convert.ToInt32(el.valor));
+                            }
+                            recorre_expresion(hijos[2]);
+                        }
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            Elemento el = (Elemento)recorre_expresion(hijos[1]);
+                            if(el != null)
+                            {
+                                this.indices.Add(Convert.ToInt32(el.valor));
+                            }
                         }
                         break;
                     }
             }
             return "";
         }
+        #endregion
 
+        #region Funciones y Metodos auxiliares
         private Elemento buscarValorDeVar(string nombre)
         {
             string valor = null;
@@ -357,6 +416,36 @@ namespace Lienzo2D.Clases
             }
             return elemento;
         }
+
+        private Elemento buscarValorDeArray(string nombre, List<int> indices)
+        {
+            Elemento retorno = null;
+            foreach(Variable v in this.vars)
+            {
+                if (v.esArreglo)
+                {
+                    if (v.Valores.Count() == 1 && indices.Count()==1)//EN CASO DE UNA DIMENSION
+                    {
+                        List<int> aux = v.Valores.ElementAt(0);
+                        int index = indices.ElementAt(0);
+                        int maxIndex = aux.Count() - 1;//INDICE MAXIMO DEL ARREGLO
+                        String valor = "";
+                        if(index <= maxIndex)
+                        {
+                            valor = aux.ElementAt(index).ToString();
+                            retorno = new Elemento(valor, "entero");
+                            break;
+                        }
+                        else
+                        {
+                            ErrorEnAnalisis err = new ErrorEnAnalisis("Indice afuera de los limites del Arreglo: "+v.nombre+" en Ambito: "+this.ambito, "Error Semantico", this.line, this.colum);
+                            this.SemanticosExpr.Add(err);
+                        }
+                    }
+                }
+            }
+            return retorno;
+        }//SOLO ARREGLOS DE UNA DIMENSION
 
         private bool comprobarOperacion(Elemento a, Elemento b, String operando)
         {
@@ -462,5 +551,6 @@ namespace Lienzo2D.Clases
                 return "false";
             }
         }
+        #endregion
     }
 }

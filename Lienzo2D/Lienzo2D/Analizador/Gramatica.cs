@@ -467,7 +467,7 @@ namespace Lienzo2D.Analizador
             #endregion
 
             #region Preferencias
-            this.MarkPunctuation("¿", "?","(",")","$","=");
+            this.MarkPunctuation("¿", "?","(",")","$","=",";");
             NonGrammarTerminals.Add(linea);
             NonGrammarTerminals.Add(multlinea);
             this.Root = INICIO;
