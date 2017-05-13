@@ -48,6 +48,10 @@ namespace Lienzo2D.Clases
 
         List<int> subValores = new List<int>();
 
+        int Line; //LINEA DONDE OCURRE EL ERROR
+                                    //AMBAS AUXILIARES
+        int Column; //COLUMNA DONDE OCURRE EL ERROR
+
         #endregion
 
         public Tabla_Simbolos(ParseTreeNode raiz)
@@ -104,6 +108,7 @@ namespace Lienzo2D.Clases
             generarTabla(this.raizAST);
         }
 
+        #region Generacion De Tabla
         private object generarTabla(ParseTreeNode raiz)
         {
             string Inicio = raiz.ToString();
@@ -225,15 +230,17 @@ namespace Lienzo2D.Clases
                                 c.conservar = conservar;
                                 c.tipo = tipo;
                                 c.ambito = ambito;
-                                Tabla.Add(c);
+                                //Tabla.Add(c);
                                 //VARIABLES:
                                 Variable var = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, true);
                                 if(VariableExisteEnAmbito(var.nombre, var.ambito))
                                 {
-                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Ya existe una variable: ' " + var.nombre + " ' Declarada en ambito: ' "+ambitos.Peek()+" '", "Error Semantico",1,1);
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Ya existe una variable: ' " + var.nombre + " ' Declarada en ambito: ' "+ambitos.Peek()+" '", "Error Semantico",hijos[0].Token.Location.Line,hijos[0].Token.Location.Column+3);
+                                    this.erroresSemanticos.Add(error);
                                 }
                                 else
                                 {
+                                    Tabla.Add(c);
                                     variables.Add(var);
                                 }                                                      
                             }
@@ -279,14 +286,34 @@ namespace Lienzo2D.Clases
                                         vari.dimensiones.Add(v);
                                     }
                                     this.DimensAux.Clear();
-                                    variables.Add(vari);
+                                    if(ArregloExiste(c.nombre, c.ambito) || VariableExisteEnAmbito(c.nombre, c.ambito))
+                                    {
+                                        ErrorEnAnalisis err = new ErrorEnAnalisis("Ya existe una variable: ' " + c.nombre + " ' declarada en ambito: ' " + c.ambito + " '", "Error Semantico", this.Line, this.Column);
+                                        this.erroresSemanticos.Add(err);
+                                    }
+                                    else
+                                    {
+                                        Tabla.Add(c);
+                                        variables.Add(vari);
+                                    }
+                                    
                                 }
                                 else
                                 {
                                     Variable va = new Variable(c.nombre, c.valor, c.tipo, c.ambito, c.conservar, false);
-                                    variables.Add(va);
+                                    if(ArregloExiste(va.nombre, va.ambito)|| VariableExisteEnAmbito(va.nombre, va.ambito))
+                                    {
+                                        ErrorEnAnalisis error = new ErrorEnAnalisis("Ya existe una variable: ' " + va.nombre + " ' declarada en ambito: ' " + va.ambito + " '", "Error Semantico", this.Line, this.Column);
+                                        this.erroresSemanticos.Add(error);
+                                    }
+                                    else
+                                    {
+                                        Tabla.Add(c);
+                                        variables.Add(va);
+                                    }
+                                    
                                 }
-                                Tabla.Add(c);
+                                //Tabla.Add(c);
                                 //AQUI EVALUARÉ SI ES UN ARREGLO PARA PROCEDER
                             }
                             auxiliar.Clear();
@@ -569,6 +596,9 @@ namespace Lienzo2D.Clases
                         }
                         if(raiz.ChildNodes.Count() == 1)
                         {
+                            //AQUI PONDRE LAS REFERENCIAS A LAS LINEAS Y COLUMNAS DE ASIGNACIÓN
+                            this.Line = hijos[0].Token.Location.Line;
+                            this.Column = hijos[0].Token.Location.Column;
                             string nombre = hijos[0].ToString().Replace(" (identificador)", "");
                             Simbolo sim = new Simbolo(nombre, "", "", "", this.ambitos.Peek(), false, true, 0);
                             this.auxiliar.Add(sim);
@@ -579,6 +609,9 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//ASIGNAICIÓN SOLO PRODUCE UN IDENTIFICADOR
                         {
+                            //AQUI PONDRE LAS REFERENCIAS A LAS LINEAS Y COLUMNAS DE ASIGNACIÓN
+                            this.Line = hijos[0].Token.Location.Line;
+                            this.Column = hijos[0].Token.Location.Column;
                             Simbolo aux = new Simbolo();
                             aux.nombre = hijos[0].ToString().Replace(" (identificador)","");
                             aux.valor = null;
@@ -587,6 +620,8 @@ namespace Lienzo2D.Clases
                         if(raiz.ChildNodes.Count() == 2)//CUANDO VIENE UNA ASIGNACIÓN DE UNA VARIABLE CON SU VALOR
                         {
                             //PENDIENTE DE VERIFICAR SU VALOR
+                            this.Line = hijos[0].Token.Location.Line;
+                            this.Column = hijos[0].Token.Location.Column;
                             Simbolo aux = new Simbolo();
                             aux.nombre = hijos[0].ToString().Replace(" (identificador)", "");
                             //evaluo una nueva expresión
@@ -676,6 +711,7 @@ namespace Lienzo2D.Clases
             }
             return "";
         }
+        #endregion
 
         #region Metodos y Funciones Auxiliares
         private bool seConserva(string cadena)

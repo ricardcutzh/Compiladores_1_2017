@@ -17,6 +17,7 @@ namespace Lienzo2D.Clases
         public List<String> Extends = new List<String>();
         public String nombre;
         public String visibilidad;
+        List<Lienzo> LienzosExtend = new List<Lienzo>();
 
         public Lienzo(List<Procedimiento> Procedimientos, List<Funcion> Funciones, List<Variable> Variables, List<String> Extends, String nombre, String visibilidad)
         {
@@ -61,6 +62,11 @@ namespace Lienzo2D.Clases
                 cadena = cadena + "# De Parametros: " + p.parametros.Count() + " \n";
             }
             MessageBox.Show(cadena);
+        }
+
+        public void addToExtendedLienzo(Lienzo nuevo)
+        {
+            this.LienzosExtend.Add(nuevo);
         }
     }
 }

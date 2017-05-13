@@ -23,6 +23,14 @@ namespace Lienzo2D
         List<ArbolSintactico> Trees = new List<ArbolSintactico>();
         //OBJETO REPORTE
         Reporte rep = new Reporte();
+
+        //TABLA GENERAL DE SIMBOLOS EN EL PROYECTO
+        List<Simbolo> TablaGenera = new List<Simbolo>();
+
+        //LISTA DE LIENZOS COMPILADOS
+        List<Lienzo> LienzosCompilados = new List<Lienzo>();
+
+        List<ErrorEnAnalisis> Errores = new List<ErrorEnAnalisis>();
         public Form1()
         {
             InitializeComponent();
@@ -302,6 +310,11 @@ namespace Lienzo2D
         {
             if (tabControl1.TabPages.Count > 0)
             {
+                this.Errores.Clear();
+                this.TablaGenera.Clear();
+                this.LienzosCompilados.Clear();
+                Sintactico.raizDeArbol = null;
+                Sintactico.errores.Clear();
                 TabPage tab = (TabPage)tabControl1.TabPages[tabControl1.SelectedIndex];
                 RichTextBox EntradaAnalizar = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
                 bool restult = Sintactico.analizar(EntradaAnalizar.Text);
@@ -317,15 +330,32 @@ namespace Lienzo2D
                     {
                         Tabla_Simbolos tabla = new Tabla_Simbolos(Sintactico.raizDeArbol);
                         tabla.generarme_tabla();
-                        List<Simbolo> simbolos = tabla.getTable();
+                        //List<Simbolo> simbolos = tabla.getTable();
 
-                        TablaSimbolosHTML reporte = new TablaSimbolosHTML(simbolos);
-                        reporte.generarTablaHTML();
+                        //TablaSimbolosHTML reporte = new TablaSimbolosHTML(simbolos);
+                        //reporte.generarTablaHTML();
 
                         Lienzo l = new Lienzo(tabla.getProcedimientos(), tabla.getFunciones(), tabla.getVariables(), tabla.getExtends(), tabla.getNombre(), tabla.getVisibilidad());
-                       
-                        Reporte re = new Reporte();
-                        re.ReporteDeErrores(tabla.semanticos(), "Errores");
+                        this.LienzosCompilados.Add(l);
+                        AnalisisDeExtends(tabla.getExtends());
+                        //Reporte re = new Reporte();
+                        //re.ReporteDeErrores(tabla.semanticos(), "Errores");
+                        MeterDatosAListasGenerales(tabla.semanticos(), tabla.getTable());
+
+                        if (this.Errores.Count() > 0)
+                        {
+                            InfoErr.Text = "Existen Errores Semanticos";
+                        }
+                        else
+                        {
+                            InfoErr.Text = "Compilación Terminada";
+                        }
+
+                        MessageBox.Show("Lienzos Compilados: " + this.LienzosCompilados.Count());
+                        foreach (Lienzo h in this.LienzosCompilados)
+                        {
+                            h.ReporteDeLienzo();
+                        }
                     }
                     
                 }
@@ -425,7 +455,79 @@ namespace Lienzo2D
 
         private void toolStripButton8_Click(object sender, EventArgs e)//MUESTRA LA TABLA DE SIMBOLOS
         {
+            TablaSimbolosHTML tabla = new TablaSimbolosHTML(this.TablaGenera);
+            tabla.generarTablaHTML();
             Process.Start("C:\\Reportes\\TablaDeSimbolos.html");
+        }
+
+        private void AnalisisDeExtends(List<String> Extends)
+        {
+            foreach(TabPage t in tabControl1.TabPages)
+            {
+                foreach(String name in Extends)
+                {
+                    if(name+".lz" == t.Text)
+                    {
+                        Sintactico.raizDeArbol = null;
+                        Sintactico.errores.Clear();
+                        TabPage aux = t;
+                        RichTextBox aux1 = (RichTextBox)t.Controls[0].Controls[1];
+                        bool result = Sintactico.analizar(aux1.Text);
+                        if (result)
+                        {
+                            if (Sintactico.errores.Count() > 0)//SI EXISTEN ERRORES
+                            {
+                                foreach(ErrorEnAnalisis er in Sintactico.errores)
+                                {
+                                    this.Errores.Add(er);
+                                }
+                            }
+                            Tabla_Simbolos tabla = new Tabla_Simbolos(Sintactico.raizDeArbol);
+                            tabla.generarme_tabla();
+
+                            Lienzo nuevo = new Lienzo(tabla.getProcedimientos(), tabla.getFunciones(), tabla.getVariables(), tabla.getExtends(), tabla.getNombre(), tabla.getVisibilidad());
+
+                            this.LienzosCompilados.Add(nuevo);
+
+                            AnalisisDeExtends(tabla.getExtends());
+
+                            MeterDatosAListasGenerales(tabla.semanticos(), tabla.getTable());
+
+                            
+                        }
+                        else
+                        {
+                            foreach(ErrorEnAnalisis er in Sintactico.errores)//ERRORES FALTALES
+                            {
+                                this.Errores.Add(er);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        private void MeterDatosAListasGenerales(List<ErrorEnAnalisis>errores, List<Simbolo> Simbolos)
+        {
+            foreach(ErrorEnAnalisis er in errores)
+            {
+                this.Errores.Add(er);
+            }
+            foreach(Simbolo c in Simbolos)
+            {
+                this.TablaGenera.Add(c);
+            }
+        }
+
+        private void toolStripButton9_Click(object sender, EventArgs e)
+        {
+            if (this.Errores.Count > 0)
+            {
+                Reporte re = new Reporte();
+                re.ReporteDeErrores(this.Errores, "Errores");
+            }
         }
     }
 }
