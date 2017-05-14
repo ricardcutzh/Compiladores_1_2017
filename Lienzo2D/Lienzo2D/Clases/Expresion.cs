@@ -340,6 +340,7 @@ namespace Lienzo2D.Clases
                                 if(elemento == null)
                                 {
                                     //BUSCARE EL ELEMENTO EN PARAMETROS
+                                    elemento = buscarValorDeVarPara(hijos[0].ToString().Replace(" (identificador)", ""));
                                 }
                                 if (elemento != null)
                                 {
@@ -373,7 +374,7 @@ namespace Lienzo2D.Clases
                             this.line = hijos[0].Token.Location.Line;
                             this.colum = hijos[0].Token.Location.Line;
                             Elemento elemento = null;
-                            string nombreArreglo = hijos[0].ToString().Replace(" (identificadro)","");
+                            string nombreArreglo = hijos[0].ToString().Replace(" (identificador)","");
                             recorre_expresion(hijos[1]);
                             elemento = buscarValorDeArray(nombreArreglo, this.indices);
                             indices.Clear();
@@ -453,22 +454,25 @@ namespace Lienzo2D.Clases
             {
                 if (v.esArreglo)
                 {
-                    if (v.Valores.Count() == 1 && indices.Count()==1)//EN CASO DE UNA DIMENSION
+                    if(v.nombre == nombre)
                     {
-                        List<int> aux = v.Valores.ElementAt(0);
-                        int index = indices.ElementAt(0);
-                        int maxIndex = aux.Count() - 1;//INDICE MAXIMO DEL ARREGLO
-                        String valor = "";
-                        if(index <= maxIndex)
+                        if (v.Valores.Count() == 1 && indices.Count() == 1)//EN CASO DE UNA DIMENSION
                         {
-                            valor = aux.ElementAt(index).ToString();
-                            retorno = new Elemento(valor, "entero");
-                            break;
-                        }
-                        else
-                        {
-                            ErrorEnAnalisis err = new ErrorEnAnalisis("Indice afuera de los limites del Arreglo: "+v.nombre+" en Ambito: "+this.ambito, "Error Semantico", this.line, this.colum);
-                            this.SemanticosExpr.Add(err);
+                            List<int> aux = v.Valores.ElementAt(0);
+                            int index = indices.ElementAt(0);
+                            int maxIndex = aux.Count() - 1;//INDICE MAXIMO DEL ARREGLO
+                            String valor = "";
+                            if (index <= maxIndex)
+                            {
+                                valor = aux.ElementAt(index).ToString();
+                                retorno = new Elemento(valor, "entero");
+                                break;
+                            }
+                            else
+                            {
+                                ErrorEnAnalisis err = new ErrorEnAnalisis("Indice afuera de los limites del Arreglo: " + v.nombre + " en Ambito: " + this.ambito, "Error Semantico", this.line, this.colum);
+                                this.SemanticosExpr.Add(err);
+                            }
                         }
                     }
                 }

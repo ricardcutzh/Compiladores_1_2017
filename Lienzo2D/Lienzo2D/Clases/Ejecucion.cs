@@ -27,6 +27,12 @@ namespace Lienzo2D.Clases
 
         List<Parametro> paraAux = new List<Parametro>();
 
+        List<Parametro> parametrosAuxiliares = new List<Parametro>();
+        String nombreProcedimiento;
+
+        Variable varauxiliar;
+        String nombreAsignar;
+
         int contador = 0;
 
         int line;
@@ -76,14 +82,29 @@ namespace Lienzo2D.Clases
                 Procedimiento main = MetodoPrincipal(Padre);
                 this.LienzoEjecutando = Padre;
                 this.ambitosEje.Push(main.Nombre);
+                ejecutaFunciones(main.Sentencias);
+                IniciaObteniendoParametros();
+                
                 //Padre.reporteDeArreglos();
-                Ejecutar(main.Sentencias);
-                //Padre.reporteVariables();
+                //Ejecutar(main.Sentencias);
+                Padre.reporteVariables();
                 Padre.reporteDeArreglos();
             }
             catch
             {
                 Console.WriteLine("error al iniciar la ejecución");
+            }
+        }
+
+
+        private void IniciaObteniendoParametros()
+        {
+            foreach(Lienzo l in this.LienzosCompilados)
+            {
+                foreach(Procedimiento p in l.Procedimientos)
+                {
+                    obtenerParametrosDeFunciones(p.Sentencias);
+                }
             }
         }
 
@@ -122,6 +143,22 @@ namespace Lienzo2D.Clases
                 }
             }
             return f;
+        }
+
+        public Procedimiento buscarProcedimiento(string nombre)
+        {
+            Procedimiento n = null;
+            foreach(Lienzo l in this.LienzosCompilados)
+            {
+                foreach(Procedimiento p in l.Procedimientos)
+                {
+                    if(p.Nombre == nombre)
+                    {
+                        n = p;
+                    }
+                }
+            }
+            return n;
         }
 
         private Procedimiento MetodoPrincipal(Lienzo padre)
@@ -335,9 +372,270 @@ namespace Lienzo2D.Clases
             }
             return v;
         }
+
+        private void asignarValorDeFuncion(string nombre)
+        {
+            foreach(Variable k in this.LienzoEjecutando.Variables)
+            {
+                if(k.nombre == nombre)
+                {
+                    k.valor = this.varauxiliar.valor;
+                    k.Valores = this.varauxiliar.Valores;
+                }
+            }
+        }
         #endregion
 
         #region Ejecucion de Codigo
+
+        private Object ejecutaFunciones(ParseTreeNode raiz)
+        {
+            string Inicio = raiz.ToString();
+            ParseTreeNode[] hijos = null;
+            if (raiz.ChildNodes.Count > 0)
+            {
+                hijos = raiz.ChildNodes.ToArray();
+            }
+            switch (Inicio)
+            {
+                case "SENTENCIAS":
+                    {
+                        if (raiz.ChildNodes.Count() == 2)
+                        {
+                            //ME MUEVO A LA SENTENCIA QUE TOCARÍA:
+                            ejecutaFunciones(hijos[0]);
+                            //ME MUEVO RECURSIVAMENTE A SENTENCIAS
+                            ejecutaFunciones(hijos[1]);//SENTENCIAS
+                        }
+                        break;
+                    }
+                case "VARLOCALES":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)
+                        {
+                            ejecutaFunciones(hijos[3]);
+                        }
+                        break;
+                    }
+                case "TIPOASIGNACION":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)
+                        {
+                            string nombreAsignar = ejecutaFunciones(hijos[1]).ToString();
+                            this.nombreAsignar = nombreAsignar;
+                            ejecutaFunciones(hijos[3]);
+                        }
+                        break;
+                    }
+                case "ASIGNACIONARR":
+                    {
+                        if (raiz.ChildNodes.Count() == 1)
+                        {
+                            return hijos[0].ToString().Replace(" (identificador)", "");
+                        }
+                        break;
+                    }
+                case "LLENADOARR":
+                    {
+                        if (raiz.ChildNodes.Count == 1)
+                        {
+                            ejecutaFunciones(hijos[0]);
+                        }
+                        break;
+                    }
+                case "RESULTADOFUN":
+                    {
+                        string nombreDeFuncion = hijos[0].ToString().Replace(" (identificador)", "");
+                        Funcion f = buscarFuncion(nombreDeFuncion);
+                        this.contador = 0;
+                        this.paraAux = f.Parametros;
+                        ejecutaFunciones(hijos[1]);
+                        //AQUI ME FALTA LA LLAMADA A RESULTADO DE LA FUNCION
+                        //AQUI DEBO DE HACER UNA VARIABLE GLOBAL CON LA CUAL PUEDA ALMACENAR TEMPORALMENTE LA VARIABLE
+                        //QUE ALMACENO O QUE RETORNA LA FUNCION PARA LUEGO PONERLA EN DONDE CORRESPOONDE SEGUN SU VALOR
+                        //this.varauxiliar;
+                        EjecucionFuncion(f.Sentencias);
+                        if (this.varauxiliar != null)
+                        {
+                            asignarValorDeFuncion(this.nombreAsignar);
+                        }
+                        break;
+                    }
+                case "LISTADOEXPRE":
+                    {
+                        if (raiz.ChildNodes.Count() == 3)
+                        {
+                            ejecutaFunciones(hijos[0]);
+                            ejecutaFunciones(hijos[2]);
+                        }
+                        if (raiz.ChildNodes.Count() == 1)
+                        {
+                            Elemento ele = null;
+                            try
+                            {
+                                Expresion exp = new Expresion(this.paraAux.ElementAt(this.contador).tipo, this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                                ele = (Elemento)exp.recorre_expresion(hijos[0]);
+                            }
+                            catch
+                            {
+                                ele = null;
+                            }
+                            if (ele != null)
+                            {
+                                try
+                                {
+                                    this.paraAux.ElementAt(this.contador).valor = ele.valor;
+                                    Variable nueva = new Variable(this.paraAux.ElementAt(this.contador).nombre, ele.valor, this.paraAux.ElementAt(this.contador).tipo, this.ambitosEje.Peek(), false, false);
+                                    this.LienzoEjecutando.Variables.Add(nueva);
+                                }
+                                catch
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Parametros no Concuerdan", "Error Semantico", this.line, this.column);
+                                    this.errores.Add(error);
+                                }
+                            }
+                            else
+                            {
+                                ErrorEnAnalisis error = new ErrorEnAnalisis("Parametros no Concuerdan", "Error Semantico", this.line, this.column);
+                                this.errores.Add(error);
+                            }
+                            this.contador = this.contador + 1;
+                        }
+                        break;
+                    }
+                case "DIMENSIONES":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)//::= opb EXPR clb DIMENSIONES
+                        {
+                            Expresion expr = new Expresion("entero", this.LienzoEjecutando.Variables, this.ambitosEje.Peek());
+                            Elemento el = (Elemento)expr.recorre_expresion(hijos[1]);
+                            if (el != null)
+                            {
+                                this.indices.Add(Convert.ToInt32(el.valor));
+                            }
+                            else
+                            {
+                                List<ErrorEnAnalisis> auxier = expr.getErroresSemanticos();
+                                foreach (ErrorEnAnalisis c in auxier)
+                                {
+                                    this.errores.Add(c);
+                                }
+                            }
+                            ejecutaFunciones(hijos[3]);
+                        }
+                        if (raiz.ChildNodes.Count() == 3)//::= opb EXPR clb
+                        {
+                            Expresion expr = new Expresion("entero", this.LienzoEjecutando.Variables, this.ambitosEje.Peek());
+                            Elemento el = (Elemento)expr.recorre_expresion(hijos[1]);
+                            if (el != null)
+                            {
+                                this.indices.Add(Convert.ToInt32(el.valor));
+                            }
+                            else
+                            {
+                                List<ErrorEnAnalisis> auxier = expr.getErroresSemanticos();
+                                foreach (ErrorEnAnalisis c in auxier)
+                                {
+                                    this.errores.Add(c);
+                                }
+                            }
+                        }
+                        break;
+                    }
+            }
+            return "";
+        }
+
+        private Object obtenerParametrosDeFunciones(ParseTreeNode raiz)
+        {
+            string Inicio = raiz.ToString();
+            ParseTreeNode[] hijos = null;
+            if (raiz.ChildNodes.Count > 0)
+            {
+                hijos = raiz.ChildNodes.ToArray();
+            }
+            switch (Inicio)
+            {
+                case "SENTENCIAS":
+                    {
+                        if (raiz.ChildNodes.Count() == 2)
+                        {
+                            obtenerParametrosDeFunciones(hijos[0]);
+                            obtenerParametrosDeFunciones(hijos[1]);
+                        }
+                        break;
+                    }
+                case "FUN_PRO":
+                    {
+                        if(raiz.ChildNodes.Count() == 2)
+                        {
+                            this.contador = 0;
+                            String nombrePro = hijos[0].ToString().Replace(" (identificador)","");
+                            this.nombreProcedimiento = nombrePro;
+                            Procedimiento p = buscarProcedimiento(nombrePro);
+                            if(p != null)
+                            {
+                                this.parametrosAuxiliares = p.parametros;
+                            }
+                            obtenerParametrosDeFunciones(hijos[1]);
+                        }
+                        break;
+                    }
+                case "LISTADOEXPRE":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)//:= LISTADOEXPRE com LISTADOEXPRE
+                        {
+                            obtenerParametrosDeFunciones(hijos[0]);
+                            obtenerParametrosDeFunciones(hijos[2]);
+                        }
+                        if(raiz.ChildNodes.Count() == 1)
+                        {
+                            Elemento ele = null;
+                            try
+                            {
+                                Expresion exp = new Expresion(this.parametrosAuxiliares.ElementAt(this.contador).tipo, this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                                ele = (Elemento)exp.recorre_expresion(hijos[0]);
+                            }
+                            catch
+                            {
+                                ele = null;
+                            }
+                            if(ele != null)
+                            {
+                                try
+                                {
+                                    this.parametrosAuxiliares.ElementAt(this.contador).valor = ele.valor;
+                                    Variable nueva = new Variable(this.parametrosAuxiliares.ElementAt(this.contador).nombre, ele.valor, this.parametrosAuxiliares.ElementAt(this.contador).tipo, this.nombreProcedimiento, false, false);
+                                    this.LienzoEjecutando.Variables.Add(nueva);
+                                }
+                                catch
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("Parametros no Concuerdan", "Error Semantico", this.line, this.column);
+                                    this.errores.Add(error);
+                                }
+                            }
+                            else
+                            {
+                                ErrorEnAnalisis error = new ErrorEnAnalisis("Parametros no Concuerdan", "Error Semantico", this.line, this.column);
+                                this.errores.Add(error);
+                            }
+                            this.contador = this.contador + 1;
+                        }
+                        break;
+                    }
+                case "SENTENCIASP":
+                    {
+                        if(raiz.ChildNodes.Count() == 2)
+                        {
+                            obtenerParametrosDeFunciones(hijos[0]);
+                            obtenerParametrosDeFunciones(hijos[1]);
+                        }
+                        break;
+                    }
+            }
+            return "";
+        }
+
         private Object Ejecutar(ParseTreeNode raiz)
         {
             string Inicio = raiz.ToString();
@@ -371,8 +669,8 @@ namespace Lienzo2D.Clases
                     {
                         if(raiz.ChildNodes.Count() == 4)
                         {
-                            string nombreAsignar = hijos[1].ToString();
-
+                            string nombreAsignar = Ejecutar(hijos[1]).ToString();
+                            this.nombreAsignar = nombreAsignar;
                             Ejecutar(hijos[3]);
                         }
                         break;
@@ -403,6 +701,12 @@ namespace Lienzo2D.Clases
                         //AQUI ME FALTA LA LLAMADA A RESULTADO DE LA FUNCION
                         //AQUI DEBO DE HACER UNA VARIABLE GLOBAL CON LA CUAL PUEDA ALMACENAR TEMPORALMENTE LA VARIABLE
                         //QUE ALMACENO O QUE RETORNA LA FUNCION PARA LUEGO PONERLA EN DONDE CORRESPOONDE SEGUN SU VALOR
+                        //this.varauxiliar;
+                        EjecucionFuncion(f.Sentencias);
+                        if(this.varauxiliar != null)
+                        {
+                            asignarValorDeFuncion(this.nombreAsignar);
+                        }
                         break;
                     }
                 case "LISTADOEXPRE":
@@ -429,6 +733,8 @@ namespace Lienzo2D.Clases
                                 try
                                 {
                                     this.paraAux.ElementAt(this.contador).valor = ele.valor;
+                                    Variable nueva = new Variable(this.paraAux.ElementAt(this.contador).nombre, ele.valor, this.paraAux.ElementAt(this.contador).tipo, this.ambitosEje.Peek(), false, false);
+                                    this.LienzoEjecutando.Variables.Add(nueva);
                                 }
                                 catch
                                 {
@@ -559,7 +865,7 @@ namespace Lienzo2D.Clases
                         if (raiz.ChildNodes.Count() == 2)
                         {
                             //ME MUEVO A LA SENTENCIA QUE TOCARÍA:
-                            Ejecutar(hijos[0]);
+                            EjecucionFuncion(hijos[0]);
                             if (!retorna)
                             {
                                 //ME MUEVO RECURSIVAMENTE A SENTENCIAS
@@ -579,7 +885,7 @@ namespace Lienzo2D.Clases
                             string tipoAsingnar = getTipoDeVar(nombreAsignar, this.ambitosEje.Peek());
                             //debo obtener el tipo de variable que es..
                             //ME MUEVO A DIMENSIONES OPCIONALES
-                            Ejecutar(hijos[1]);
+                            EjecucionFuncion(hijos[1]);
                             if (tipoAsingnar != "")
                             {
                                 Expresion ex = new Expresion(tipoAsingnar, this.LienzoEjecutando.Variables, this.ambitosEje.Peek());
@@ -668,7 +974,7 @@ namespace Lienzo2D.Clases
                         {
                             retorna = true;
                             Variable r = buscarVar(hijos[1].ToString().Replace(" (identificador)", ""));
-                            retorno = r;
+                            this.varauxiliar = r;
                         }
                         break;
                     }
