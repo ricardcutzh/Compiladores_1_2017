@@ -59,6 +59,7 @@
     <Compile Include="Analizador\Gramatica.cs" />
     <Compile Include="Analizador\Sintactico.cs" />
     <Compile Include="Clases\ArbolSintactico.cs" />
+    <Compile Include="Clases\Ejecucion.cs" />
     <Compile Include="Clases\Elemento.cs" />
     <Compile Include="Clases\Expresion.cs" />
     <Compile Include="Clases\Funcion.cs" />

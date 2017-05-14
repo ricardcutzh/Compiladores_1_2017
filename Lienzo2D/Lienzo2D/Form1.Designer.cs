@@ -57,14 +57,15 @@
             this.Resultado = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
-            this.PanelEdicion = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.TrackPosition = new System.Windows.Forms.Timer(this.components);
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.InfoErr = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
+            this.PanelEdicion = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.TrackPosition = new System.Windows.Forms.Timer(this.components);
+            this.consolaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -115,7 +116,8 @@
             // 
             this.pruebasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addTabToolStripMenuItem,
-            this.abrirASTVisorToolStripMenuItem});
+            this.abrirASTVisorToolStripMenuItem,
+            this.consolaToolStripMenuItem});
             this.pruebasToolStripMenuItem.Name = "pruebasToolStripMenuItem";
             this.pruebasToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.pruebasToolStripMenuItem.Text = "Pruebas";
@@ -328,6 +330,32 @@
             this.toolStripButton8.Text = "Tabla de Simbolos";
             this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
             // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // InfoErr
+            // 
+            this.InfoErr.Enabled = false;
+            this.InfoErr.Name = "InfoErr";
+            this.InfoErr.Size = new System.Drawing.Size(200, 25);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
+            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton9.Text = "Errores En Ejecucion";
+            this.toolStripButton9.Click += new System.EventHandler(this.toolStripButton9_Click);
+            // 
             // PanelEdicion
             // 
             this.PanelEdicion.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -356,31 +384,12 @@
             this.TrackPosition.Interval = 150;
             this.TrackPosition.Tick += new System.EventHandler(this.TrackPosition_Tick);
             // 
-            // toolStripSeparator6
+            // consolaToolStripMenuItem
             // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
-            // 
-            // InfoErr
-            // 
-            this.InfoErr.Enabled = false;
-            this.InfoErr.Name = "InfoErr";
-            this.InfoErr.Size = new System.Drawing.Size(100, 25);
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripButton9
-            // 
-            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
-            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton9.Name = "toolStripButton9";
-            this.toolStripButton9.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton9.Text = "Errores En Ejecucion";
-            this.toolStripButton9.Click += new System.EventHandler(this.toolStripButton9_Click);
+            this.consolaToolStripMenuItem.Name = "consolaToolStripMenuItem";
+            this.consolaToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.consolaToolStripMenuItem.Text = "Consola";
+            this.consolaToolStripMenuItem.Click += new System.EventHandler(this.consolaToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -446,6 +455,7 @@
         private System.Windows.Forms.ToolStripTextBox InfoErr;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripButton toolStripButton9;
+        private System.Windows.Forms.ToolStripMenuItem consolaToolStripMenuItem;
     }
 }
 

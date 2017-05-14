@@ -30,6 +30,7 @@ namespace Lienzo2D
         //LISTA DE LIENZOS COMPILADOS
         List<Lienzo> LienzosCompilados = new List<Lienzo>();
 
+
         List<ErrorEnAnalisis> Errores = new List<ErrorEnAnalisis>();
         public Form1()
         {
@@ -348,7 +349,22 @@ namespace Lienzo2D
                         }
                         else
                         {
-                            InfoErr.Text = "Compilación Terminada";
+                            Ejecucion ej = new Ejecucion(this.LienzosCompilados, this.TablaGenera);
+                            ej.IniciarEjecucion();
+                            if (ej.getErrores().Count() > 0)
+                            {
+                                InfoErr.Text = "Existen Errores Semánticos";
+                                foreach(ErrorEnAnalisis er in ej.getErrores())
+                                {
+                                    this.Errores.Add(er);
+                                }
+                            }
+                            else
+                            {
+                                InfoErr.Text = "Compilación Terminada";
+                                this.TablaGenera = ej.getTablaNueva();
+                            }
+                           
                         }
 
                         MessageBox.Show("Lienzos Compilados: " + this.LienzosCompilados.Count());
@@ -527,7 +543,13 @@ namespace Lienzo2D
             {
                 Reporte re = new Reporte();
                 re.ReporteDeErrores(this.Errores, "Errores");
+                Process.Start("C:\\Reportes\\ReporteErrores.html");
             }
+        }
+
+        private void consolaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("hola mundo");
         }
     }
 }

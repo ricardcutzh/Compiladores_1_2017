@@ -17,6 +17,8 @@ namespace Lienzo2D.Clases
         List<Variable> vars;//LISTADO DE VARIABLES ACTUALES ANALIZADAS
         string ambito; //ambito el que me encuentro
 
+        List<Parametro> parametros = new List<Parametro>();
+
         //LISTA DE ERRORES SEMANTICOS ENCONTRADOS EN EXPRESIONES:
         List<ErrorEnAnalisis> SemanticosExpr = new List<ErrorEnAnalisis>();
 
@@ -40,6 +42,14 @@ namespace Lienzo2D.Clases
             this.tipo = tipo;
             this.vars = vars;
             this.ambito = ambito;
+        }
+
+        public Expresion(String tipo, List<Variable> vars, string ambito, List<Parametro> parametros)
+        {
+            this.tipo = tipo;
+            this.vars = vars;
+            this.ambito = ambito;
+            this.parametros = parametros;
         }
         #endregion
 
@@ -327,6 +337,10 @@ namespace Lienzo2D.Clases
                             {
                                 //DEBO DE BUSCAR EN LAS VARIABLES PARA TRAER EL VALOR QUE ESTE YA TIENE
                                 elemento = buscarValorDeVar(hijos[0].ToString().Replace(" (identificador)", ""));
+                                if(elemento == null)
+                                {
+                                    //BUSCARE EL ELEMENTO EN PARAMETROS
+                                }
                                 if (elemento != null)
                                 {
                                     return elemento;
@@ -404,15 +418,30 @@ namespace Lienzo2D.Clases
                 {
                     valor = v.valor;
                     elemento = new Elemento(valor, v.tipo);
-                    break;
+                    //break;
                 }
                 else if (v.nombre == nombre && v.esGlobal == true)
                 {
                     valor = v.valor;
                     elemento = new Elemento(valor, v.tipo);
-                    break;
+                    //break;
                 }
 
+            }
+            return elemento;
+        }
+
+        private Elemento buscarValorDeVarPara(string nombre)
+        {
+            string valor = null;
+            Elemento elemento = null;
+            foreach(Parametro p in this.parametros)
+            {
+                if(p.nombre == nombre)
+                {
+                    valor = p.valor;
+                    elemento = new Elemento(valor, p.tipo);
+                }
             }
             return elemento;
         }

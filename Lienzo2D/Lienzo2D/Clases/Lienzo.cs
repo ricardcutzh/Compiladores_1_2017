@@ -68,5 +68,41 @@ namespace Lienzo2D.Clases
         {
             this.LienzosExtend.Add(nuevo);
         }
+
+        public void reporteVariables()
+        {
+            string cadena = "Variables: \n";
+            foreach(Variable v in this.Variables)
+            {
+                if (!v.esArreglo)
+                {
+                    cadena = cadena + "Nombre: " + v.nombre + " | Valor: " + v.valor + "\n";
+                }        
+            }
+
+            MessageBox.Show(cadena);
+        }
+
+        public void reporteDeArreglos()
+        {
+            string cadena = "Arreglos: \n";
+            foreach(Variable v in this.Variables)
+            {
+                if (v.esArreglo)
+                {
+                    cadena = cadena + "Nombre: " + v.nombre + " Ambito "+v.ambito+"\n";
+                    cadena = cadena + "Valores: \n";
+                    foreach(List<int> l in v.Valores)
+                    {
+                        foreach(int n in l)
+                        {
+                            cadena = cadena + "| " + n + " |\n";
+                        }
+                    }
+                    cadena = cadena + "Fin\n"; 
+                }
+            }
+            MessageBox.Show(cadena);
+        }
     }
 }

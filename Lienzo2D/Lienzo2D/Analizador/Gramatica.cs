@@ -324,9 +324,9 @@ namespace Lienzo2D.Analizador
                       |SyntaxError
                       | Empty;
 
-            RETORNAR.Rule = ret + identificador
-                            | ret + EXPR
-                            |SyntaxError;
+            RETORNAR.Rule =  ret + identificador
+                            //| ret + EXPR
+                            | SyntaxError;
 
             // GRAMATICA DE ASINACION DE VALOR DE VARIABLES
             ASIGNAVAR.Rule = identificador + DIMOPCIONAL + igual + EXPR + finSent
@@ -413,6 +413,7 @@ namespace Lienzo2D.Analizador
                    | A + mayorIgual + A
                    | A + menorIgual + A
                    | A + mayorque + A
+                   | EXPR //EVITAR MAS CÓDIGO
                    | EXPRPRIMA
                    |SyntaxError;
 

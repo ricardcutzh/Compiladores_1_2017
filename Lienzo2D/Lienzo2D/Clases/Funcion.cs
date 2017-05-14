@@ -13,7 +13,7 @@ namespace Lienzo2D.Clases
     {
         public String Nombre;
         public String Tipo;
-        ParseTreeNode Sentencias;
+        public ParseTreeNode Sentencias;
         public List<Parametro> Parametros = new List<Parametro>();
 
         public Funcion(ParseTreeNode Sentencias, string Nombre, string Tipo, List<Parametro> Parametros)

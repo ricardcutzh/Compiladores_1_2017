@@ -10,7 +10,7 @@ namespace Lienzo2D.Clases
 {
     class Procedimiento
     {
-        ParseTreeNode Sentencias;
+        public ParseTreeNode Sentencias;
         public String Nombre;
         public List<Parametro> parametros = new List<Parametro>();
         public Procedimiento(ParseTreeNode sentencias, String nombre, List<Parametro> parametros)

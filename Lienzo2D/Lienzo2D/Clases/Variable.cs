@@ -8,12 +8,12 @@ namespace Lienzo2D.Clases
 {
     class Variable
     {
-        public string nombre { get; }
-        public string valor { get; }
-        public string tipo { get; }
-        public string ambito { get; }
-        public bool conservar { get; }
-        public bool esGlobal { get; }
+        public string nombre { get; set; }
+        public string valor { get; set; }
+        public string tipo { get; set; }
+        public string ambito { get; set; }
+        public bool conservar { get; set; }
+        public bool esGlobal { get; set; }
         public List<int> dimensiones = new List<int>();
         public bool esArreglo;
         public List<List<int>> Valores = new List<List<int>>();
@@ -36,6 +36,7 @@ namespace Lienzo2D.Clases
             this.conservar = conservar;
             this.esGlobal = esGlobal;
             this.esArreglo = esArreglo;
+            this.ambito = ambito;
         }
 
         
