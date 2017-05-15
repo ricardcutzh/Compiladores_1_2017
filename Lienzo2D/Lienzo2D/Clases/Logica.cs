@@ -43,7 +43,12 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//::= EXPLOGICA
                         {
-                            EvaluaLogica(hijos[0]);
+                            Object pr = EvaluaLogica(hijos[0]);
+                            if(pr != null)
+                            {
+                                bool f = (Boolean)pr;
+                                return f;
+                            }
                         }
                         break;
                     }
@@ -51,7 +56,7 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//::= B
                         {
-                            EvaluaLogica(hijos[0]);
+                            return EvaluaLogica(hijos[0]);
                         }
                         break;
                     }
@@ -59,22 +64,43 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//::= C
                         {
-                            EvaluaLogica(hijos[0]);
+                            return EvaluaLogica(hijos[0]);
                         }
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            string operando = hijos[1].ToString().Replace(" (Key symbol)", "");
-                            if (operando == "||")//OR
+                            Object val1 = EvaluaLogica(hijos[0]);
+                            Object val2 = EvaluaLogica(hijos[2]);
+                            bool a;
+                            bool b;
+                            if(val1 != null && val2 != null)
                             {
-
+                                a = (Boolean)val1;
+                                b = (Boolean)val2;
+                                string operando = hijos[1].ToString().Replace(" (Key symbol)", "");
+                                if (operando == "||")//OR
+                                {
+                                    return (a || b);
+                                }
+                                if (operando == "!||")//NOR
+                                {
+                                    return !(a || b);
+                                }
+                                if (operando == "&|")//XOR
+                                {
+                                    if(a == b)
+                                    {
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        return true;
+                                    }
+                                }
                             }
-                            if (operando == "!||")//NOR
+                            else
                             {
-
-                            }
-                            if (operando == "&|")//XOR
-                            {
-
+                                ErrorEnAnalisis error = new ErrorEnAnalisis("No se puede Aplicar Operaciones Logicas", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                this.errores.Add(error);
                             }
                         }
                         break;
@@ -83,19 +109,34 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//::= D
                         {
-                            EvaluaLogica(hijos[0]);
+                            return EvaluaLogica(hijos[0]);
                         }
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            string operando = hijos[1].ToString().Replace(" (Key symbol)", "");
-                            if (operando == "&&")//AND
+                            Object val1 = EvaluaLogica(hijos[0]);
+                            Object val2 = EvaluaLogica(hijos[2]);
+                            bool a;
+                            bool b;
+                            if(val1 != null && val2 != null)
                             {
-
+                                a = (Boolean)val1;
+                                b = (Boolean)val2;
+                                string operando = hijos[1].ToString().Replace(" (Key symbol)", "");
+                                if (operando == "&&")//AND
+                                {
+                                    return a && b;
+                                }
+                                if (operando == "!&&")//NAND
+                                {
+                                    return !(a && b);
+                                }
                             }
-                            if (operando == "!&&")//NAND
+                            else
                             {
-
+                                ErrorEnAnalisis error = new ErrorEnAnalisis("No se puede Aplicar Operaciones Logicas", "Error Semantico", hijos[1].Token.Location.Line, hijos[1].Token.Location.Column);
+                                this.errores.Add(error);
                             }
+                            
                         }
                         break;
                     }
@@ -117,18 +158,19 @@ namespace Lienzo2D.Clases
                         {
                             try
                             {
-                                bool prueba = (Boolean)EvaluaLogica(hijos[0]);
+                                bool prueba = (Boolean)EvaluaLogica(hijos[1]);
                                 return !prueba;
                             }
                             catch
                             {
-
+                                return null;
                             }
                         }
                         break;
                     }
 
                 #endregion
+
                 #region RELACIONALES
                 case "RELACIONALES":
                     {
@@ -162,29 +204,40 @@ namespace Lienzo2D.Clases
                         }
                         if (raiz.ChildNodes.Count() == 1)
                         {
-                            Expresion ele1 = new Expresion("boolean", this.variables, this.ambito);
-                            Elemento elem = (Elemento)ele1.recorre_expresion(hijos[0]);
-                            Expresion ele2 = new Expresion("entero", this.variables, this.ambito);
-                            Elemento elem2 = (Elemento)ele2.recorre_expresion(hijos[0]);
-                            if (elem != null)
+                            if (hijos[0].ToString().Contains("EXPR"))
                             {
+                                Expresion ele1 = new Expresion("boolean", this.variables, this.ambito);
+                                Elemento elem = (Elemento)ele1.recorre_expresion(hijos[0]);
+                                Expresion ele2 = new Expresion("entero", this.variables, this.ambito);
+                                Elemento elem2 = (Elemento)ele2.recorre_expresion(hijos[0]);
+                                if (elem != null)
+                                {
 
-                                return ConvertElementToBool(elem);
-                            }
-                            if (elem2 != null)
-                            {
-                                return elem2;
-                            }
-                            if (elem == null && elem2 == null)
-                            {
-                                foreach (ErrorEnAnalisis r in ele1.getErroresSemanticos())
-                                {
-                                    this.errores.Add(r);
+                                    return ConvertElementToBool(elem);
                                 }
-                                foreach (ErrorEnAnalisis s in ele2.getErroresSemanticos())
+                                if (elem2 != null)
                                 {
-                                    this.errores.Add(s);
+                                    return elem2;
                                 }
+                                if (elem == null && elem2 == null)
+                                {
+                                    foreach (ErrorEnAnalisis r in ele1.getErroresSemanticos())
+                                    {
+                                        this.errores.Add(r);
+                                    }
+                                    foreach (ErrorEnAnalisis s in ele2.getErroresSemanticos())
+                                    {
+                                        this.errores.Add(s);
+                                    }
+                                }
+                            }
+                            if (hijos[0].ToString().Contains("EXPLOGICA"))
+                            {
+                                return EvaluaLogica(hijos[0]);
+                            }
+                            if (hijos[0].ToString().Contains("RELACIONALES"))
+                            {
+                                return EvaluaLogica(hijos[0]);
                             }
                         }
                         break;
