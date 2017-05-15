@@ -33,6 +33,8 @@ namespace Lienzo2D.Clases
         Variable varauxiliar;
         String nombreAsignar;
 
+        string tipo_evaluado;
+
         int contador = 0;
 
         int line;
@@ -86,7 +88,7 @@ namespace Lienzo2D.Clases
                 IniciaObteniendoParametros();
                 
                 //Padre.reporteDeArreglos();
-                //Ejecutar(main.Sentencias);
+                Ejecutar(main.Sentencias);
                 Padre.reporteVariables();
                 Padre.reporteDeArreglos();
             }
@@ -371,6 +373,20 @@ namespace Lienzo2D.Clases
                 }
             }
             return v;
+        }
+
+        private string buscaValorDeVar(string nombre, string ambito, string tipo)
+        {
+            string valor = "";
+            foreach(Variable v in this.LienzoEjecutando.Variables)
+            {
+                if(v.nombre == nombre && v.tipo == tipo && v.ambito == ambito)
+                {
+                    valor = v.valor;
+                    break;
+                }
+            }
+            return valor;
         }
 
         private void asignarValorDeFuncion(string nombre)
@@ -661,7 +677,18 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 4)
                         {
+                            this.tipo_evaluado = Ejecutar(hijos[2]).ToString();
                             Ejecutar(hijos[3]);
+                            this.tipo_evaluado = null;
+                        }
+                        break;
+                    }
+                case "TIPO":
+                    {
+                        if (raiz.ChildNodes.Count() == 1)
+                        {
+                            string tipo = hijos[0].ToString().Replace(" (Keyword)", "");
+                            return tipo;
                         }
                         break;
                     }
@@ -672,6 +699,35 @@ namespace Lienzo2D.Clases
                             string nombreAsignar = Ejecutar(hijos[1]).ToString();
                             this.nombreAsignar = nombreAsignar;
                             Ejecutar(hijos[3]);
+                        }
+                        if(raiz.ChildNodes.Count() == 1)
+                        {
+                            Ejecutar(hijos[0]);
+                        }
+                        break;
+                    }
+                case "ASIGNACION":
+                    {
+                        if(raiz.ChildNodes.Count() == 2)
+                        {
+                            //obtengo el nombre de la variable ya asignada
+                            string nombreDeVar = hijos[0].ToString().Replace(" (identificador)", "");
+                            string ambito = ambitosEje.Peek();//ambito en el que estoy
+                            Expresion exp = new Expresion(this.tipo_evaluado, this.LienzoEjecutando.Variables, ambito);
+                            Elemento el = (Elemento)exp.recorre_expresion(hijos[1]);
+                            if(el != null)
+                            {
+                                buscaVariableYAsignaValor(nombreDeVar, el.valor, ambito, this.tipo_evaluado);
+                            }
+                            else
+                            {
+                                
+                                foreach(ErrorEnAnalisis f in exp.getErroresSemanticos())
+                                {
+                                    this.errores.Add(f);
+                                }
+                            }
+
                         }
                         break;
                     }
@@ -845,9 +901,172 @@ namespace Lienzo2D.Clases
                         }
                         break;
                     }
+                case "FUN_PRO":
+                    {
+                        if (raiz.ChildNodes.Count() == 2)
+                        {
+                            string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                            Procedimiento p = (Procedimiento)buscarProcedimiento(nombre);
+                            if (p != null)
+                            {
+                                ambitosEje.Push(nombre);
+                                ejecutaFunciones(p.Sentencias);
+                                Ejecutar(p.Sentencias);
+                                ambitosEje.Pop();
+                            }
+                            else
+                            {
+                                Funcion f = (Funcion)buscarFuncion(nombre);
+                                ambitosEje.Push(nombre);
+                                ejecutaFunciones(f.Sentencias);
+                                Ejecutar(p.Sentencias);
+                                ambitosEje.Pop();
+                            }
+                        }
+                        break;
+                    }
+                case "SENTE_AU":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            if (hijos[2].ToString().Contains("EXPR"))//::= identificador mas EXPR
+                            {
+                                string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                                string tipo = getTipoDeVar(nombre, ambitosEje.Peek());
+                                string currentvalor = buscaValorDeVar(nombre, ambitosEje.Peek(), tipo);
+                                Expresion exp = new Expresion(tipo, this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                                Elemento el = (Elemento)exp.recorre_expresion(hijos[2]);
+                                if(el != null)
+                                {
+                                    if (currentvalor != "")
+                                    {
+                                        int current = Convert.ToInt32(currentvalor);
+                                        int addnew = Convert.ToInt32(el.valor);
+                                        int nuevoval = current + addnew;
+                                        if (!buscaVariableYAsignaValor(nombre, nuevoval.ToString(), ambitosEje.Peek(), tipo))
+                                        {
+                                            ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este Ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                            this.errores.Add(error);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    foreach(ErrorEnAnalisis s in exp.getErroresSemanticos())
+                                    {
+                                        this.errores.Add(s);
+                                    }
+                                }
+                            }
+                            else//:identificador mas mas
+                            {
+                                string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                                string tipo = getTipoDeVar(nombre, ambitosEje.Peek());
+                                string currentValue = buscaValorDeVar(nombre, ambitosEje.Peek(), tipo);
+                                if (currentValue!="")
+                                {
+                                    if(tipo == "entero")
+                                    {
+                                        int current = Convert.ToInt32(currentValue);
+                                        int nuevoval = current + 1;
+                                        if(!buscaVariableYAsignaValor(nombre, nuevoval.ToString(), ambitosEje.Peek(), tipo))
+                                        {
+                                            ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este Ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                            this.errores.Add(error);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ErrorEnAnalisis error = new ErrorEnAnalisis("No se puede realizar al aumento a una variable de tipo: "+tipo, "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                        this.errores.Add(error);
+                                    }
+                                }
+                                else
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este ambito: " + ambitosEje.Peek(),"Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                    this.errores.Add(error);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "SENTE_DEC":
+                    {
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            if (hijos[2].ToString().Contains("EXPR"))
+                            {
+                                string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                                string tipo = getTipoDeVar(nombre, ambitosEje.Peek());
+                                string currentvalor = buscaValorDeVar(nombre, ambitosEje.Peek(), tipo);
+                                Expresion exp = new Expresion(tipo, this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                                Elemento el = (Elemento)exp.recorre_expresion(hijos[2]);
+                                if (el != null)
+                                {
+                                    if (currentvalor != "")
+                                    {
+                                        int current = Convert.ToInt32(currentvalor);
+                                        int addnew = Convert.ToInt32(el.valor);
+                                        int nuevoval = current - addnew;
+                                        if (!buscaVariableYAsignaValor(nombre, nuevoval.ToString(), ambitosEje.Peek(), tipo))
+                                        {
+                                            ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este Ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                            this.errores.Add(error);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (ErrorEnAnalisis s in exp.getErroresSemanticos())
+                                    {
+                                        this.errores.Add(s);
+                                    }
+                                }
+                            }
+                            else//::= identificador menos menos
+                            {
+                                string nombre = hijos[0].ToString().Replace(" (identificador)", "");
+                                string tipo = getTipoDeVar(nombre, ambitosEje.Peek());
+                                string currentValue = buscaValorDeVar(nombre, ambitosEje.Peek(), tipo);
+                                if (currentValue != "")
+                                {
+                                    if (tipo == "entero")
+                                    {
+                                        int current = Convert.ToInt32(currentValue);
+                                        int nuevoval = current - 1;
+                                        if (!buscaVariableYAsignaValor(nombre, nuevoval.ToString(), ambitosEje.Peek(), tipo))
+                                        {
+                                            ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este Ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                            this.errores.Add(error);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ErrorEnAnalisis error = new ErrorEnAnalisis("No se puede realizar al aumento a una variable de tipo: " + tipo, "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                        this.errores.Add(error);
+                                    }
+                                }
+                                else
+                                {
+                                    ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
+                                    this.errores.Add(error);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case "SENTENCIA_SI":
+                    {
+                        if (raiz.ChildNodes.Count() == 4)
+                        {
+
+                        }
+                        break;
+                    }
             }
             return "";
         }
+
 
         public Object EjecucionFuncion(ParseTreeNode raiz)
         {

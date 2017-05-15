@@ -76,7 +76,7 @@ namespace Lienzo2D.Clases
             {
                 if (!v.esArreglo)
                 {
-                    cadena = cadena + "Nombre: " + v.nombre + " | Valor: " + v.valor + "\n";
+                    cadena = cadena + "Nombre: " + v.nombre + " | Valor: " + v.valor + " | Ambito: "+v.ambito+" |\n";
                 }        
             }
 

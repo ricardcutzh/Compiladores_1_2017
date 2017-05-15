@@ -64,6 +64,7 @@
     <Compile Include="Clases\Expresion.cs" />
     <Compile Include="Clases\Funcion.cs" />
     <Compile Include="Clases\Lienzo.cs" />
+    <Compile Include="Clases\Logica.cs" />
     <Compile Include="Clases\Parametro.cs" />
     <Compile Include="Clases\Procedimiento.cs" />
     <Compile Include="Clases\Simbolo.cs" />

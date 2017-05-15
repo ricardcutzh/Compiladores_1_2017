@@ -150,7 +150,7 @@ namespace Lienzo2D.Analizador
             PINTAR_PUNTO = new NonTerminal("PINTAR_PUNTO"),
             PINTAR_OR = new NonTerminal("PINTAR_OR"),
             FUN_PRO = new NonTerminal("FUN_PRO"),
-            SENTE_AU = new NonTerminal("SENTE_AU_DEC"),
+            SENTE_AU = new NonTerminal("SENTE_AU"),
             SENTE_DEC = new NonTerminal("SENTE_DEC"),
             DIM = new NonTerminal("DIM"),
             RESULTADOFUN = new NonTerminal("RESULTADOFUN"),
@@ -414,7 +414,9 @@ namespace Lienzo2D.Analizador
                    | A + menorIgual + A
                    | A + mayorque + A
                    | EXPR //EVITAR MAS CÓDIGO
-                   | EXPRPRIMA
+                   | opp + EXPLOGICA + clp
+                   | opp + RELACIONALES + clp
+                   //| EXPRPRIMA
                    |SyntaxError;
 
             //SENTENCIA PARA 
