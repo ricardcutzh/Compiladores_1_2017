@@ -58,7 +58,14 @@
     <Compile Include="Analizador\ErrorEnAnalisis.cs" />
     <Compile Include="Analizador\Gramatica.cs" />
     <Compile Include="Analizador\Sintactico.cs" />
+    <Compile Include="AreaImagen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AreaImagen.Designer.cs">
+      <DependentUpon>AreaImagen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Clases\ArbolSintactico.cs" />
+    <Compile Include="Clases\Dibujo.cs" />
     <Compile Include="Clases\Ejecucion.cs" />
     <Compile Include="Clases\Elemento.cs" />
     <Compile Include="Clases\Expresion.cs" />
@@ -87,6 +94,9 @@
     <Compile Include="Graficacion\TablaSimbolosHTML.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AreaImagen.resx">
+      <DependentUpon>AreaImagen.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
     </EmbeddedResource>

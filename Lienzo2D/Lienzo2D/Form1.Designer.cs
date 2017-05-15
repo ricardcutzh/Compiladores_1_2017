@@ -38,6 +38,7 @@
             this.pruebasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirASTVisorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consolaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.LienzoNombre = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -65,7 +66,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.TrackPosition = new System.Windows.Forms.Timer(this.components);
-            this.consolaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pruebaGraphicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -117,7 +118,8 @@
             this.pruebasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addTabToolStripMenuItem,
             this.abrirASTVisorToolStripMenuItem,
-            this.consolaToolStripMenuItem});
+            this.consolaToolStripMenuItem,
+            this.pruebaGraphicsToolStripMenuItem});
             this.pruebasToolStripMenuItem.Name = "pruebasToolStripMenuItem";
             this.pruebasToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.pruebasToolStripMenuItem.Text = "Pruebas";
@@ -135,6 +137,13 @@
             this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.abrirASTVisorToolStripMenuItem.Text = "Abrir AST Visor";
             this.abrirASTVisorToolStripMenuItem.Click += new System.EventHandler(this.abrirASTVisorToolStripMenuItem_Click);
+            // 
+            // consolaToolStripMenuItem
+            // 
+            this.consolaToolStripMenuItem.Name = "consolaToolStripMenuItem";
+            this.consolaToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.consolaToolStripMenuItem.Text = "Consola";
+            this.consolaToolStripMenuItem.Click += new System.EventHandler(this.consolaToolStripMenuItem_Click);
             // 
             // toolStripContainer1
             // 
@@ -384,12 +393,12 @@
             this.TrackPosition.Interval = 150;
             this.TrackPosition.Tick += new System.EventHandler(this.TrackPosition_Tick);
             // 
-            // consolaToolStripMenuItem
+            // pruebaGraphicsToolStripMenuItem
             // 
-            this.consolaToolStripMenuItem.Name = "consolaToolStripMenuItem";
-            this.consolaToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.consolaToolStripMenuItem.Text = "Consola";
-            this.consolaToolStripMenuItem.Click += new System.EventHandler(this.consolaToolStripMenuItem_Click);
+            this.pruebaGraphicsToolStripMenuItem.Name = "pruebaGraphicsToolStripMenuItem";
+            this.pruebaGraphicsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.pruebaGraphicsToolStripMenuItem.Text = "Prueba Graphics";
+            this.pruebaGraphicsToolStripMenuItem.Click += new System.EventHandler(this.pruebaGraphicsToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -456,6 +465,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripButton toolStripButton9;
         private System.Windows.Forms.ToolStripMenuItem consolaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pruebaGraphicsToolStripMenuItem;
     }
 }
 

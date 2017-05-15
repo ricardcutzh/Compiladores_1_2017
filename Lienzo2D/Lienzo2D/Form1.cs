@@ -68,6 +68,7 @@ namespace Lienzo2D
         {
             timer1.Start();
             TrackPosition.Start();
+           
         }
 
 
@@ -217,7 +218,7 @@ namespace Lienzo2D
                 principal.SelectionColor = Color.Green;
             }
 
-
+            principal.Focus();
            
         }
 
@@ -285,6 +286,7 @@ namespace Lienzo2D
             principal.SelectionStart = originalIndex;
             principal.SelectionLength = originalLength;
             principal.SelectionColor = originalColor;
+            principal.Focus();
         }
 
         #endregion
@@ -349,29 +351,33 @@ namespace Lienzo2D
                         }
                         else
                         {
+
                             Ejecucion ej = new Ejecucion(this.LienzosCompilados, this.TablaGenera);
+                            AreaImagen nuevo = new AreaImagen();
+                            nuevo.Show();
                             ej.IniciarEjecucion();
                             if (ej.getErrores().Count() > 0)
-                            {
-                                InfoErr.Text = "Existen Errores Semánticos";
-                                foreach(ErrorEnAnalisis er in ej.getErrores())
-                                {
-                                    this.Errores.Add(er);
-                                }
+                             {
+                                 InfoErr.Text = "Existen Errores Semánticos";
+                                 foreach(ErrorEnAnalisis er in ej.getErrores())
+                                 {
+                                     this.Errores.Add(er);
+                                 }
+                             }
+                             else
+                             {
+                                 InfoErr.Text = "Compilación Terminada";
+                                 this.TablaGenera = ej.getTablaNueva();
+                                nuevo.Visible = true;
                             }
-                            else
-                            {
-                                InfoErr.Text = "Compilación Terminada";
-                                this.TablaGenera = ej.getTablaNueva();
-                            }
-                           
+                            
                         }
 
-                        MessageBox.Show("Lienzos Compilados: " + this.LienzosCompilados.Count());
+                        /*MessageBox.Show("Lienzos Compilados: " + this.LienzosCompilados.Count());
                         foreach (Lienzo h in this.LienzosCompilados)
                         {
                             h.ReporteDeLienzo();
-                        }
+                        }*/
                     }
                     
                 }
@@ -550,6 +556,12 @@ namespace Lienzo2D
         private void consolaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Console.WriteLine("hola mundo");
+        }
+
+        private void pruebaGraphicsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AreaImagen pr = new AreaImagen();
+            pr.Show();
         }
     }
 }

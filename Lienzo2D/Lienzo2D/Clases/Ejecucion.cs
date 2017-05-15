@@ -90,7 +90,7 @@ namespace Lienzo2D.Clases
                 //Padre.reporteDeArreglos();
                 Ejecutar(main.Sentencias);
                 Padre.reporteVariables();
-                Padre.reporteDeArreglos();
+                //Padre.reporteDeArreglos();
             }
             catch
             {
@@ -1204,7 +1204,7 @@ namespace Lienzo2D.Clases
                     }
                 case "PINTAR_PUNTO":
                     {
-                        if(raiz.ChildNodes.Count()== 7)//:=pintarp EXPR , EXPR, EXPR, EXPR
+                        if(raiz.ChildNodes.Count()== 8)//:=pintarp EXPR , EXPR, EXPR, EXPR
                         {
                             //OBTENIENDO PRIMER PARAMETRO
                             Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
@@ -1221,6 +1221,7 @@ namespace Lienzo2D.Clases
                             if(el1 != null && el2 != null && el3!=null && ele4 != null)
                             {
                                 //AQUI MANDO LOS PARAMETROS QUE NECESITO A LA FUNCION DE PINTAR
+                                Dibujo.figuraPrueba(AreaImagen.g);
                             }
                         }
                         break;
