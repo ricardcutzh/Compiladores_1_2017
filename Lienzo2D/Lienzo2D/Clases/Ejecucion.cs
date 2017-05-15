@@ -910,6 +910,7 @@ namespace Lienzo2D.Clases
                             if (p != null)
                             {
                                 ambitosEje.Push(nombre);
+                                Console.Write("Ejecutando: " + nombre+" \n");
                                 ejecutaFunciones(p.Sentencias);
                                 Ejecutar(p.Sentencias);
                                 ambitosEje.Pop();
@@ -1197,6 +1198,58 @@ namespace Lienzo2D.Clases
                                     ErrorEnAnalisis error = new ErrorEnAnalisis("No Existe Variable: ' " + nombre + " ' en este ambito: " + ambitosEje.Peek(), "Error Semantico", hijos[0].Token.Location.Line, hijos[0].Token.Location.Column);
                                     this.errores.Add(error);
                                 }
+                            }
+                        }
+                        break;
+                    }
+                case "PINTAR_PUNTO":
+                    {
+                        if(raiz.ChildNodes.Count()== 7)//:=pintarp EXPR , EXPR, EXPR, EXPR
+                        {
+                            //OBTENIENDO PRIMER PARAMETRO
+                            Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el1 = (Elemento)expr1.recorre_expresion(hijos[1]);
+                            //OBTENNIENDO EL SEGUNDO PARAMETRO
+                            Expresion expr2 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el2 = (Elemento)expr2.recorre_expresion(hijos[3]);
+                            //OBTENIENDO EL TERCER PARAMETRO
+                            Expresion expr3 = new Expresion("cadena", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el3 = (Elemento)expr3.recorre_expresion(hijos[5]);
+                            //OBTENIENDO EL CUARTO PARAMETRO
+                            Expresion expr4 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele4 = (Elemento)expr4.recorre_expresion(hijos[7]);
+                            if(el1 != null && el2 != null && el3!=null && ele4 != null)
+                            {
+                                //AQUI MANDO LOS PARAMETROS QUE NECESITO A LA FUNCION DE PINTAR
+                            }
+                        }
+                        break;
+                    }
+                case "PINTAR_OR":
+                    {
+                        if(raiz.ChildNodes.Count() == 11)//::= pintarp EXPR, EXPR, EXPR, EXPR, EXPR, EXPR
+                        {
+                            //OBTENIENDO EL PRIMER PARAMETRO
+                            Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele1 = (Elemento)expr1.recorre_expresion(hijos[1]);
+                            //OBTENIENDO EL SEGUNDO PARAMETRO
+                            Expresion expr2 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele2 = (Elemento)expr2.recorre_expresion(hijos[3]);
+                            //OBTENIENDO EL TERCER PARAMETRO
+                            Expresion expr3 = new Expresion("cadena", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele3 = (Elemento)expr3.recorre_expresion(hijos[5]);
+                            //OBTENIENDO EL CUARTO PARAMETRO
+                            Expresion expr4 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele4 = (Elemento)expr4.recorre_expresion(hijos[7]);
+                            //OBTENIENDO EL QUINTO PARAMETRO
+                            Expresion expr5 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele5 = (Elemento)expr5.recorre_expresion(hijos[9]);
+                            //OBTENIENDO EL SEXTO PARAMETRO
+                            Expresion expr6 = new Expresion("caracter", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele6 = (Elemento)expr6.recorre_expresion(hijos[11]);
+                            if (ele1 != null && ele2!= null && ele3!=null && ele4!=null && ele5!=null && ele6!=null)
+                            {
+                                //AQUI MANDO LOS PARAMETROS PARA QUE DIBUJE
                             }
                         }
                         break;
