@@ -70,7 +70,7 @@ namespace Lienzo2D.Graficacion
                 wr.Write("<th>Nombre</th>");
                 wr.Write("<th>Tipo</th>");
                 wr.Write("<th>Visibilidad</th>");
-                wr.Write("<th>Valor</th>");
+                //wr.Write("<th>Valor</th>");
                 wr.Write("<th>Ambito</th>");
                 wr.Write("<th>Conservar</th>");
                 wr.Write("<th>Es Arreglo</th>");
@@ -83,7 +83,7 @@ namespace Lienzo2D.Graficacion
                     wr.Write("<td>" + sim.nombre + "</td>");
                     wr.Write("<td>" + sim.tipo + "</td>");
                     wr.Write("<td>" + sim.visibilidad + "</td>");
-                    wr.Write("<td>" + sim.valor + "</td>");
+                    //wr.Write("<td>" + sim.valor + "</td>");
                     wr.Write("<td>" + sim.ambito + "</td>");
                     wr.Write("<td>" + Aplica(sim.conservar) + "</td>");
                     wr.Write("<td>" + Aplica(sim.esArreglo) + "</td>");

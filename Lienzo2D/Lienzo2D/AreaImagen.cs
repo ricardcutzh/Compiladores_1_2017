@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Lienzo2D.Clases;
+using System.Drawing.Imaging;
 
 namespace Lienzo2D
 {
@@ -18,12 +19,15 @@ namespace Lienzo2D
             InitializeComponent();
         }
 
+        public static Panel p = new Panel();
+        public static Bitmap map = new Bitmap(1000, 1000);
         public static Graphics g;
 
         private void AreaImagen_Load(object sender, EventArgs e)
         {
-            g = Picture.CreateGraphics();
-            this.BringToFront();
+            //g = Picture.CreateGraphics();
+            
+            g = Graphics.FromImage(map);
         }
 
      
@@ -34,13 +38,15 @@ namespace Lienzo2D
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Dibujo.figuraPrueba(g);
-               
+            
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            this.Hide();
+            Salida.SizeMode = PictureBoxSizeMode.AutoSize;
+            Salida.Refresh();
+            Salida.Image = map;
+            Salida.Refresh();
         }
     }
 }

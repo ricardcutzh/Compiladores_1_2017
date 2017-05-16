@@ -331,6 +331,7 @@ namespace Lienzo2D
                     }
                     else
                     {
+                       
                         Tabla_Simbolos tabla = new Tabla_Simbolos(Sintactico.raizDeArbol);
                         tabla.generarme_tabla();
                         //List<Simbolo> simbolos = tabla.getTable();

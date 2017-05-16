@@ -10,8 +10,7 @@ namespace Lienzo2D.Clases
 {
     class Dibujo
     {
-        public static Graphics figura;
-        static Pen lapiz = new Pen(Color.Blue);
+       
 
         public static void figuraPrueba(Graphics h)
         {
@@ -24,7 +23,49 @@ namespace Lienzo2D.Clases
 
         public static void Pintar_Punt(Graphics h, int posx, int posy, string color, int diamtro)
         {
+            Color colo = ColorTranslator.FromHtml(color);
+            SolidBrush Lapiz = new SolidBrush(colo);
+            Rectangle rec = new Rectangle(posx-diamtro/2, posy-diamtro/2, diamtro, diamtro);
+            h.FillEllipse(Lapiz, rec);
+            Lapiz.Dispose();
+            h.Dispose();
+        }
 
+        public static void Pintar_Ovalo_Rectangulo(Graphics h, int posx, int posy, string cadena, int ancho, int alto, string fig)
+        {
+            switch (fig)
+            {
+                case "'r'":
+                    {
+                        PintarRectangulo(h, posx, posy, cadena, ancho, alto);
+                        break;
+                    }
+                case "'o'":
+                    {
+                        PintarOvalo(h, posx, posy, cadena, ancho, alto);
+                        break;
+                    }
+            }
+        }
+
+        public static void PintarRectangulo(Graphics h,int posx, int posy, string cadena, int ancho, int alto)
+        {
+            Color color = ColorTranslator.FromHtml(cadena);
+            SolidBrush Lapiz = new SolidBrush(color);
+            Rectangle r = new Rectangle(posx, posy, ancho, alto);
+            h.FillRectangle(Lapiz, r);
+            Lapiz.Dispose();
+            h.Dispose();
+        }
+
+        public static void PintarOvalo(Graphics h, int posx, int posy, string cadena, int ancho, int alto)
+        {
+            Color color = ColorTranslator.FromHtml(cadena);
+            SolidBrush Lapiz = new SolidBrush(color);
+            Rectangle r = new Rectangle(posx-ancho/2, posy-alto/2, ancho, alto);
+            h.FillEllipse(Lapiz, r);
+            Lapiz.Dispose();
+            h.Dispose();
         }
     }
 }

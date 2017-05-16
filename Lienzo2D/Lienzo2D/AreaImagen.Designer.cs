@@ -31,9 +31,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AreaImagen));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.Picture = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
+            this.Salida = new System.Windows.Forms.PictureBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Salida)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -56,34 +59,40 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Imagen:";
             // 
-            // Picture
-            // 
-            this.Picture.AutoScroll = true;
-            this.Picture.BackColor = System.Drawing.SystemColors.HighlightText;
-            this.Picture.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.Picture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Picture.Location = new System.Drawing.Point(12, 82);
-            this.Picture.Name = "Picture";
-            this.Picture.Size = new System.Drawing.Size(765, 399);
-            this.Picture.TabIndex = 1;
-            this.Picture.Paint += new System.Windows.Forms.PaintEventHandler(this.Picture_Paint);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(557, 14);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(155, 23);
             this.button1.TabIndex = 1;
-            this.button1.Text = "Volver A Editor";
+            this.button1.Text = "Ver Imagen";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // Salida
+            // 
+            this.Salida.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Salida.Location = new System.Drawing.Point(0, 3);
+            this.Salida.Name = "Salida";
+            this.Salida.Size = new System.Drawing.Size(762, 397);
+            this.Salida.TabIndex = 1;
+            this.Salida.TabStop = false;
+            // 
+            // panel2
+            // 
+            this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.Salida);
+            this.panel2.Location = new System.Drawing.Point(12, 81);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(765, 400);
+            this.panel2.TabIndex = 2;
             // 
             // AreaImagen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(789, 493);
-            this.Controls.Add(this.Picture);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AreaImagen";
@@ -91,6 +100,8 @@
             this.Load += new System.EventHandler(this.AreaImagen_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Salida)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -99,7 +110,8 @@
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel Picture;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.PictureBox Salida;
+        private System.Windows.Forms.Panel panel2;
     }
 }

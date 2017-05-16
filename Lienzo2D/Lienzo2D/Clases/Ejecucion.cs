@@ -7,6 +7,7 @@ using Irony.Ast;
 using Irony.Interpreter;
 using Irony.Parsing;
 using Lienzo2D.Analizador;
+using System.Drawing;
 
 namespace Lienzo2D.Clases
 {
@@ -57,6 +58,10 @@ namespace Lienzo2D.Clases
         {
             return this.errores;
         }
+        public List<Variable> getVariablesDespuesDeEjecucion()
+        {
+            return this.LienzoEjecutando.Variables;
+        }
         #endregion
 
         #region Construtores
@@ -89,7 +94,7 @@ namespace Lienzo2D.Clases
                 
                 //Padre.reporteDeArreglos();
                 Ejecutar(main.Sentencias);
-                Padre.reporteVariables();
+                //Padre.reporteVariables();
                 //Padre.reporteDeArreglos();
             }
             catch
@@ -622,6 +627,8 @@ namespace Lienzo2D.Clases
                                 {
                                     this.parametrosAuxiliares.ElementAt(this.contador).valor = ele.valor;
                                     Variable nueva = new Variable(this.parametrosAuxiliares.ElementAt(this.contador).nombre, ele.valor, this.parametrosAuxiliares.ElementAt(this.contador).tipo, this.nombreProcedimiento, false, false);
+                                    Simbolo simbolo = new Simbolo(this.parametrosAuxiliares.ElementAt(this.contador).nombre, this.parametrosAuxiliares.ElementAt(this.contador).tipo, "No Aplica", "", this.nombreProcedimiento, false);
+                                    this.TablaGeneral.Add(simbolo);
                                     this.LienzoEjecutando.Variables.Add(nueva);
                                 }
                                 catch
@@ -1220,15 +1227,21 @@ namespace Lienzo2D.Clases
                             Elemento ele4 = (Elemento)expr4.recorre_expresion(hijos[7]);
                             if(el1 != null && el2 != null && el3!=null && ele4 != null)
                             {
+                                AreaImagen.g = Graphics.FromImage(AreaImagen.map);
                                 //AQUI MANDO LOS PARAMETROS QUE NECESITO A LA FUNCION DE PINTAR
-                                Dibujo.figuraPrueba(AreaImagen.g);
+                                int posx = Convert.ToInt32(el1.valor);
+                                int posy = Convert.ToInt32(el2.valor);
+                                string color = el3.valor;
+                                int diametro = Convert.ToInt32(ele4.valor);
+                                Dibujo.Pintar_Punt(AreaImagen.g, posx, posy, color, diametro);
+                                //AreaImagen.p.Refresh();
                             }
                         }
                         break;
                     }
                 case "PINTAR_OR":
                     {
-                        if(raiz.ChildNodes.Count() == 11)//::= pintarp EXPR, EXPR, EXPR, EXPR, EXPR, EXPR
+                        if(raiz.ChildNodes.Count() == 12)//::= pintarp EXPR, EXPR, EXPR, EXPR, EXPR, EXPR
                         {
                             //OBTENIENDO EL PRIMER PARAMETRO
                             Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
@@ -1250,7 +1263,15 @@ namespace Lienzo2D.Clases
                             Elemento ele6 = (Elemento)expr6.recorre_expresion(hijos[11]);
                             if (ele1 != null && ele2!= null && ele3!=null && ele4!=null && ele5!=null && ele6!=null)
                             {
+                                AreaImagen.g = Graphics.FromImage(AreaImagen.map);
                                 //AQUI MANDO LOS PARAMETROS PARA QUE DIBUJE
+                                int posx = Convert.ToInt32(ele1.valor);
+                                int posy = Convert.ToInt32(ele2.valor);
+                                string cadena = ele3.valor;
+                                int ancho = Convert.ToInt32(ele4.valor);
+                                int alto = Convert.ToInt32(ele5.valor);
+                                string c = ele6.valor;
+                                Dibujo.Pintar_Ovalo_Rectangulo(AreaImagen.g, posx, posy, cadena, ancho, alto, c);
                             }
                         }
                         break;
@@ -1387,6 +1408,73 @@ namespace Lienzo2D.Clases
                             retorna = true;
                             Variable r = buscarVar(hijos[1].ToString().Replace(" (identificador)", ""));
                             this.varauxiliar = r;
+                        }
+                        break;
+                    }
+                case "PINTAR_PUNTO":
+                    {
+                        if (raiz.ChildNodes.Count() == 8)//:=pintarp EXPR , EXPR, EXPR, EXPR
+                        {
+                            //OBTENIENDO PRIMER PARAMETRO
+                            Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el1 = (Elemento)expr1.recorre_expresion(hijos[1]);
+                            //OBTENNIENDO EL SEGUNDO PARAMETRO
+                            Expresion expr2 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el2 = (Elemento)expr2.recorre_expresion(hijos[3]);
+                            //OBTENIENDO EL TERCER PARAMETRO
+                            Expresion expr3 = new Expresion("cadena", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento el3 = (Elemento)expr3.recorre_expresion(hijos[5]);
+                            //OBTENIENDO EL CUARTO PARAMETRO
+                            Expresion expr4 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele4 = (Elemento)expr4.recorre_expresion(hijos[7]);
+                            if (el1 != null && el2 != null && el3 != null && ele4 != null)
+                            {
+                                AreaImagen.g = Graphics.FromImage(AreaImagen.map);
+                                //AQUI MANDO LOS PARAMETROS QUE NECESITO A LA FUNCION DE PINTAR
+                                int posx = Convert.ToInt32(el1.valor);
+                                int posy = Convert.ToInt32(el2.valor);
+                                string color = el3.valor;
+                                int diametro = Convert.ToInt32(ele4.valor);
+                                Dibujo.Pintar_Punt(AreaImagen.g, posx, posy, color, diametro);
+                                //AreaImagen.p.Refresh();
+                            }
+                        }
+                        break;
+                    }
+                case "PINTAR_OR":
+                    {
+                        if (raiz.ChildNodes.Count() == 12)//::= pintarp EXPR, EXPR, EXPR, EXPR, EXPR, EXPR
+                        {
+                            //OBTENIENDO EL PRIMER PARAMETRO
+                            Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele1 = (Elemento)expr1.recorre_expresion(hijos[1]);
+                            //OBTENIENDO EL SEGUNDO PARAMETRO
+                            Expresion expr2 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele2 = (Elemento)expr2.recorre_expresion(hijos[3]);
+                            //OBTENIENDO EL TERCER PARAMETRO
+                            Expresion expr3 = new Expresion("cadena", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele3 = (Elemento)expr3.recorre_expresion(hijos[5]);
+                            //OBTENIENDO EL CUARTO PARAMETRO
+                            Expresion expr4 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele4 = (Elemento)expr4.recorre_expresion(hijos[7]);
+                            //OBTENIENDO EL QUINTO PARAMETRO
+                            Expresion expr5 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele5 = (Elemento)expr5.recorre_expresion(hijos[9]);
+                            //OBTENIENDO EL SEXTO PARAMETRO
+                            Expresion expr6 = new Expresion("caracter", this.LienzoEjecutando.Variables, ambitosEje.Peek());
+                            Elemento ele6 = (Elemento)expr6.recorre_expresion(hijos[11]);
+                            if (ele1 != null && ele2 != null && ele3 != null && ele4 != null && ele5 != null && ele6 != null)
+                            {
+                                AreaImagen.g = Graphics.FromImage(AreaImagen.map);
+                                //AQUI MANDO LOS PARAMETROS PARA QUE DIBUJE
+                                int posx = Convert.ToInt32(ele1.valor);
+                                int posy = Convert.ToInt32(ele2.valor);
+                                string cadena = ele3.valor;
+                                int ancho = Convert.ToInt32(ele4.valor);
+                                int alto = Convert.ToInt32(ele5.valor);
+                                String c = ele6.valor;
+                                Dibujo.Pintar_Ovalo_Rectangulo(AreaImagen.g, posx, posy, cadena, ancho, alto, c);
+                            }
                         }
                         break;
                     }

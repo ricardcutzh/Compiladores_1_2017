@@ -310,8 +310,11 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 1)//F::= identificador | entero | dec | verd | fals | caracter  | RESULTADOFUN | cadena
                         {
-                            this.line = hijos[0].Token.Location.Line;
-                            this.colum = hijos[0].Token.Location.Column;
+                            if (!hijos[0].ToString().Equals("E"))
+                            {
+                                this.line = hijos[0].Token.Location.Line;
+                                this.colum = hijos[0].Token.Location.Column;
+                            } 
                             Elemento elemento = null;
                             if (hijos[0].ToString().Contains(" (cade)"))//::=cadena
                             {
@@ -363,7 +366,7 @@ namespace Lienzo2D.Clases
                                 //String valor = hijos[0].ToString().Replace(" (false)", "");
                                 elemento = new Elemento("false", "boolean");
                             }
-                            if (hijos[0].ToString().Contains("E"))//::= (E)
+                            if (hijos[0].ToString().Equals("E"))//::= (E)//AQUI QUITE CONTAINS PRO EQUALS
                             {
                                 return recorre_expresion(hijos[0]);
                             }
