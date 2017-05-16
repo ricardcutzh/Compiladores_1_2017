@@ -39,6 +39,7 @@
             this.addTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirASTVisorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.consolaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pruebaGraphicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.LienzoNombre = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -66,7 +67,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.TrackPosition = new System.Windows.Forms.Timer(this.components);
-            this.pruebaGraphicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -112,6 +112,7 @@
             this.guardarToolStripMenuItem.Name = "guardarToolStripMenuItem";
             this.guardarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.guardarToolStripMenuItem.Text = "Guardar";
+            this.guardarToolStripMenuItem.Click += new System.EventHandler(this.guardarToolStripMenuItem_Click);
             // 
             // pruebasToolStripMenuItem
             // 
@@ -127,23 +128,30 @@
             // addTabToolStripMenuItem
             // 
             this.addTabToolStripMenuItem.Name = "addTabToolStripMenuItem";
-            this.addTabToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.addTabToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addTabToolStripMenuItem.Text = "Add Tab";
             this.addTabToolStripMenuItem.Click += new System.EventHandler(this.addTabToolStripMenuItem_Click);
             // 
             // abrirASTVisorToolStripMenuItem
             // 
             this.abrirASTVisorToolStripMenuItem.Name = "abrirASTVisorToolStripMenuItem";
-            this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.abrirASTVisorToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.abrirASTVisorToolStripMenuItem.Text = "Abrir AST Visor";
             this.abrirASTVisorToolStripMenuItem.Click += new System.EventHandler(this.abrirASTVisorToolStripMenuItem_Click);
             // 
             // consolaToolStripMenuItem
             // 
             this.consolaToolStripMenuItem.Name = "consolaToolStripMenuItem";
-            this.consolaToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.consolaToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.consolaToolStripMenuItem.Text = "Consola";
             this.consolaToolStripMenuItem.Click += new System.EventHandler(this.consolaToolStripMenuItem_Click);
+            // 
+            // pruebaGraphicsToolStripMenuItem
+            // 
+            this.pruebaGraphicsToolStripMenuItem.Name = "pruebaGraphicsToolStripMenuItem";
+            this.pruebaGraphicsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.pruebaGraphicsToolStripMenuItem.Text = "Prueba Graphics";
+            this.pruebaGraphicsToolStripMenuItem.Click += new System.EventHandler(this.pruebaGraphicsToolStripMenuItem_Click);
             // 
             // toolStripContainer1
             // 
@@ -392,13 +400,6 @@
             // 
             this.TrackPosition.Interval = 150;
             this.TrackPosition.Tick += new System.EventHandler(this.TrackPosition_Tick);
-            // 
-            // pruebaGraphicsToolStripMenuItem
-            // 
-            this.pruebaGraphicsToolStripMenuItem.Name = "pruebaGraphicsToolStripMenuItem";
-            this.pruebaGraphicsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.pruebaGraphicsToolStripMenuItem.Text = "Prueba Graphics";
-            this.pruebaGraphicsToolStripMenuItem.Click += new System.EventHandler(this.pruebaGraphicsToolStripMenuItem_Click);
             // 
             // Form1
             // 

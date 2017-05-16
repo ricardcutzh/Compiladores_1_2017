@@ -52,7 +52,7 @@ namespace Lienzo2D.Clases
         {
             Color color = ColorTranslator.FromHtml(cadena);
             SolidBrush Lapiz = new SolidBrush(color);
-            Rectangle r = new Rectangle(posx, posy, ancho, alto);
+            Rectangle r = new Rectangle(posx-ancho/2, posy-alto/2, ancho, alto);
             h.FillRectangle(Lapiz, r);
             Lapiz.Dispose();
             h.Dispose();

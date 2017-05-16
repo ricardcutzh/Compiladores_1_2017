@@ -94,7 +94,7 @@ namespace Lienzo2D.Clases
                 
                 //Padre.reporteDeArreglos();
                 Ejecutar(main.Sentencias);
-                //Padre.reporteVariables();
+                Padre.reporteVariables();
                 //Padre.reporteDeArreglos();
             }
             catch
@@ -475,7 +475,9 @@ namespace Lienzo2D.Clases
                         //AQUI DEBO DE HACER UNA VARIABLE GLOBAL CON LA CUAL PUEDA ALMACENAR TEMPORALMENTE LA VARIABLE
                         //QUE ALMACENO O QUE RETORNA LA FUNCION PARA LUEGO PONERLA EN DONDE CORRESPOONDE SEGUN SU VALOR
                         //this.varauxiliar;
+                        ambitosEje.Push(nombreDeFuncion);
                         EjecucionFuncion(f.Sentencias);
+                        ambitosEje.Pop();
                         if (this.varauxiliar != null)
                         {
                             asignarValorDeFuncion(this.nombreAsignar);
@@ -765,7 +767,6 @@ namespace Lienzo2D.Clases
                         //AQUI DEBO DE HACER UNA VARIABLE GLOBAL CON LA CUAL PUEDA ALMACENAR TEMPORALMENTE LA VARIABLE
                         //QUE ALMACENO O QUE RETORNA LA FUNCION PARA LUEGO PONERLA EN DONDE CORRESPOONDE SEGUN SU VALOR
                         //this.varauxiliar;
-                        EjecucionFuncion(f.Sentencias);
                         if(this.varauxiliar != null)
                         {
                             asignarValorDeFuncion(this.nombreAsignar);
@@ -1415,6 +1416,7 @@ namespace Lienzo2D.Clases
                     {
                         if (raiz.ChildNodes.Count() == 8)//:=pintarp EXPR , EXPR, EXPR, EXPR
                         {
+                            String ambito = ambitosEje.Peek();
                             //OBTENIENDO PRIMER PARAMETRO
                             Expresion expr1 = new Expresion("entero", this.LienzoEjecutando.Variables, ambitosEje.Peek());
                             Elemento el1 = (Elemento)expr1.recorre_expresion(hijos[1]);
@@ -1437,6 +1439,25 @@ namespace Lienzo2D.Clases
                                 int diametro = Convert.ToInt32(ele4.valor);
                                 Dibujo.Pintar_Punt(AreaImagen.g, posx, posy, color, diametro);
                                 //AreaImagen.p.Refresh();
+                            }
+                            else
+                            {
+                                foreach(ErrorEnAnalisis f in expr1.getErroresSemanticos())
+                                {
+                                    this.errores.Add(f);
+                                }
+                                foreach (ErrorEnAnalisis f in expr2.getErroresSemanticos())
+                                {
+                                    this.errores.Add(f);
+                                }
+                                foreach (ErrorEnAnalisis f in expr3.getErroresSemanticos())
+                                {
+                                    this.errores.Add(f);
+                                }
+                                foreach (ErrorEnAnalisis f in expr4.getErroresSemanticos())
+                                {
+                                    this.errores.Add(f);
+                                }
                             }
                         }
                         break;

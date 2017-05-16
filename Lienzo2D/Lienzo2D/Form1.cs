@@ -19,6 +19,8 @@ namespace Lienzo2D
 {
     public partial class Form1 : Form
     {
+        //RUTA PARA GUARDAR ARCHIVOS
+        public static String ruta = "";
         //LISTA DE ARBOLES POR ARCHIVO
         List<ArbolSintactico> Trees = new List<ArbolSintactico>();
         //OBJETO REPORTE
@@ -446,6 +448,7 @@ namespace Lienzo2D
                 {
                     string archivo = abrir.FileName;
                     string texto = File.ReadAllText(archivo);
+                    ruta = abrir.SafeFileName;
                     addNewTabFromFile(abrir.SafeFileName, texto);
                 }
             }
@@ -463,6 +466,7 @@ namespace Lienzo2D
                     try
                     {
                         StreamWriter wr = new StreamWriter(guardar.FileName + ".lz");
+                        ruta = guardar.FileName;
                         wr.Write(auxr.Text);
                         wr.Close();
                         MessageBox.Show("Archivo Guardado: " + guardar.FileName);
@@ -531,6 +535,14 @@ namespace Lienzo2D
 
         }
 
+        private string obtenerRuta(string ruta)
+        {
+            String[] v = ruta.Split('\\');
+            int x = v.Length-1;
+            string aux = v[x];
+            string nueva_ruta = ruta.Replace(aux, "");
+            return nueva_ruta;
+        }
 
         private void MeterDatosAListasGenerales(List<ErrorEnAnalisis>errores, List<Simbolo> Simbolos)
         {
@@ -561,8 +573,32 @@ namespace Lienzo2D
 
         private void pruebaGraphicsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AreaImagen pr = new AreaImagen();
-            pr.Show();
+            //AreaImagen pr = new AreaImagen();
+            //pr.Show();
+        }
+
+        private void guardarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages.Count > 0)
+            {
+                TabPage aux = tabControl1.TabPages[tabControl1.SelectedIndex];
+                RichTextBox auxr = (RichTextBox)tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0].Controls[1];
+                
+                    try
+                    {
+                        string filename = aux.Text;
+                        StreamWriter wr = new StreamWriter(obtenerRuta(ruta)+filename);
+                        wr.Write(auxr.Text);
+                        wr.Close();
+                        MessageBox.Show("Archivo Guardado: " + ruta);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error en la escritura de archivo", "Errores", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                
+            }
         }
     }
 }

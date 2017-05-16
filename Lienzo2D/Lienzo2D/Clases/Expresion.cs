@@ -242,7 +242,7 @@ namespace Lienzo2D.Clases
                                         double num1 = Convert.ToDouble(a.valor);
                                         double num2 = Convert.ToDouble(b.valor);
                                         double res = num1 / num2;
-                                        c = new Elemento(res.ToString(), "doble");
+                                        c = new Elemento(res.ToString(), "entero");
                                     }
                                     if(this.tipo == "doble")
                                     {
